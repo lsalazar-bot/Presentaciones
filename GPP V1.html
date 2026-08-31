@@ -1,0 +1,843 @@
+<title>Proyectos + Procesos Andrómeda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --bg:#EDF1F7; --surface:#FFFFFF; --surface-2:#F4F7FB; --surface-3:#E9EEF6;
+  --ink:#0F1B2D; --ink-soft:#54617A; --ink-faint:#8A97AC;
+  --line:#DCE4EF; --line-strong:#C3CFDE;
+  --accent:#2842C4; --accent-2:#3E63DD; --accent-tint:#E7ECFB; --on-accent:#FFFFFF;
+  --asis:#C1440E; --asis-tint:rgba(193,68,14,.10);
+  --tobe:#0A805A; --tobe-tint:rgba(10,128,90,.10);
+  --shadow:0 1px 2px rgba(15,27,45,.06), 0 12px 34px -18px rgba(15,27,45,.22);
+  --shadow-lg:0 24px 60px -24px rgba(15,27,45,.34);
+  --radius:18px; --radius-sm:12px;
+  --maxw:1180px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#080E1C; --surface:#101A2E; --surface-2:#15213A; --surface-3:#1B2942;
+    --ink:#EAF0FA; --ink-soft:#98A6C0; --ink-faint:#6C7C99;
+    --line:#243450; --line-strong:#314466;
+    --accent:#6E8BFF; --accent-2:#8AA1FF; --accent-tint:rgba(110,139,255,.14); --on-accent:#0A1020;
+    --asis:#F5A15A; --asis-tint:rgba(245,161,90,.13);
+    --tobe:#37D39B; --tobe-tint:rgba(55,211,155,.13);
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 16px 40px -20px rgba(0,0,0,.6);
+    --shadow-lg:0 30px 70px -28px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#080E1C; --surface:#101A2E; --surface-2:#15213A; --surface-3:#1B2942;
+  --ink:#EAF0FA; --ink-soft:#98A6C0; --ink-faint:#6C7C99;
+  --line:#243450; --line-strong:#314466;
+  --accent:#6E8BFF; --accent-2:#8AA1FF; --accent-tint:rgba(110,139,255,.14); --on-accent:#0A1020;
+  --asis:#F5A15A; --asis-tint:rgba(245,161,90,.13);
+  --tobe:#37D39B; --tobe-tint:rgba(55,211,155,.13);
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 16px 40px -20px rgba(0,0,0,.6);
+  --shadow-lg:0 30px 70px -28px rgba(0,0,0,.7);
+}
+
+/* ============ BASE ============ */
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,Segoe UI,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased; line-height:1.5;
+  overflow:hidden;
+}
+h1,h2,h3,.display{font-family:"Sora",system-ui,sans-serif; text-wrap:balance; letter-spacing:-.01em;}
+.mono{font-family:"IBM Plex Mono",ui-monospace,monospace;}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2.5px solid var(--accent);outline-offset:3px;border-radius:6px}
+
+/* ============ CHROME (header + footer) ============ */
+.stage{height:100vh;width:100vw;position:relative;display:flex;flex-direction:column;overflow:hidden}
+.topbar{
+  flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:18px;
+  padding:16px 34px;border-bottom:1px solid var(--line);background:var(--surface);
+  z-index:40;position:relative;
+}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.logo{width:34px;height:34px;flex:0 0 auto}
+.brandlogo{height:30px;width:auto;display:block;flex:0 0 auto}
+.brand-divider{width:1px;height:26px;background:var(--line-strong);flex:0 0 auto}
+:root[data-theme="dark"] .brandlogo{filter:invert(1) brightness(1.7)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .brandlogo{filter:invert(1) brightness(1.7)}}
+.brand-name{font-family:"Sora";font-weight:700;font-size:18px;letter-spacing:-.02em;color:var(--ink)}
+.brand-name span{color:var(--accent)}
+.brand-tag{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-faint);margin-top:1px}
+.meta{display:flex;align-items:center;gap:14px}
+.meta .doc{font-size:12px;color:var(--ink-soft);text-align:right;line-height:1.35}
+.meta .doc b{color:var(--ink);font-weight:600}
+.iconbtn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  width:38px;height:38px;border-radius:10px;border:1px solid var(--line);
+  background:var(--surface-2);color:var(--ink);font-size:15px;transition:.16s;
+}
+.iconbtn:hover{border-color:var(--accent);color:var(--accent)}
+.iconbtn.wide{width:auto;padding:0 13px;font-size:12.5px;font-weight:600;letter-spacing:.02em}
+
+/* ============ SLIDES ============ */
+.slides{flex:1 1 auto;position:relative;min-height:0}
+.slide{
+  position:absolute;inset:0;padding:44px clamp(34px,5vw,84px) 40px;
+  display:none;flex-direction:column;justify-content:center;overflow:auto;
+}
+.slide.active{display:flex;animation:slidein .5s cubic-bezier(.22,.61,.36,1)}
+@keyframes slidein{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.wrap{width:100%;max-width:var(--maxw);margin:0 auto}
+.eyebrow{font-family:"IBM Plex Mono";font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);font-weight:600;display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:26px;height:2px;background:var(--accent);display:inline-block;border-radius:2px}
+h1{font-size:clamp(34px,5vw,60px);line-height:1.02;margin:20px 0 0;font-weight:800}
+h2{font-size:clamp(26px,3.4vw,42px);line-height:1.08;margin:16px 0 6px;font-weight:700}
+.lead{font-size:clamp(17px,1.5vw,21px);color:var(--ink-soft);max-width:70ch;margin:16px 0 0}
+.accent{color:var(--accent)}
+.sub{font-size:14px;color:var(--ink-soft);margin:6px 0 0}
+
+/* pills */
+.pills{display:flex;gap:9px;flex-wrap:wrap;margin-top:26px}
+.pill{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 15px;font-size:13.5px;color:var(--ink);font-weight:500;box-shadow:var(--shadow)}
+.pill i{width:7px;height:7px;border-radius:50%;background:var(--accent);display:inline-block}
+
+/* thesis line */
+.thesis{margin-top:30px;border-left:3px solid var(--accent);background:var(--accent-tint);padding:18px 22px;border-radius:0 14px 14px 0;font-family:"Sora";font-weight:600;font-size:clamp(17px,1.7vw,22px);line-height:1.35;color:var(--ink)}
+
+/* cards / grids */
+.grid{display:grid;gap:18px;margin-top:26px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g4{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.card h3{font-size:18px;margin:0 0 8px;font-weight:600}
+.card p{margin:0;font-size:14.5px;color:var(--ink-soft);line-height:1.5}
+.card .label{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.card ul{margin:10px 0 0;padding-left:18px;color:var(--ink-soft)}
+.card li{margin:5px 0;font-size:14px}
+
+/* compare (proyecto vs proceso) */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:28px}
+.compare .card{position:relative;transition:.2s;cursor:default}
+.compare .card .verb{font-family:"Sora";font-weight:800;font-size:clamp(26px,3vw,38px);margin:8px 0 8px}
+.compare .p{border-top:4px solid var(--accent-2)}
+.compare .pr{border-top:4px solid var(--tobe)}
+.compare .p .verb{color:var(--accent-2)} .compare .pr .verb{color:var(--tobe)}
+.merge{margin-top:20px;text-align:center;font-size:14px;color:var(--ink-soft)}
+.merge b{color:var(--ink)}
+
+/* value chain flow */
+.flow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;margin-top:30px}
+.node{flex:1 1 0;min-width:120px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 14px;text-align:center;box-shadow:var(--shadow);position:relative;transition:.2s}
+.node .k{font-family:"IBM Plex Mono";font-size:11px;color:var(--accent);font-weight:600}
+.node .t{font-family:"Sora";font-weight:600;font-size:15px;margin-top:4px}
+.node:not(:last-child){margin-right:26px}
+.node:not(:last-child)::after{content:"→";position:absolute;right:-22px;top:50%;transform:translateY(-50%);color:var(--line-strong);font-size:20px;font-weight:700}
+.node.on{border-color:var(--accent);background:var(--accent-tint)}
+
+/* steps (visión) */
+.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:28px}
+.step{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow);cursor:pointer;transition:.2s;border-top:4px solid var(--line-strong)}
+.step:hover,.step.on{border-top-color:var(--accent);transform:translateY(-4px);box-shadow:var(--shadow-lg)}
+.step .num{font-family:"IBM Plex Mono";font-size:12px;color:var(--accent);font-weight:600}
+.step strong{display:block;font-family:"Sora";font-size:17px;margin:8px 0 6px}
+.step small{font-size:13px;color:var(--ink-soft);line-height:1.45;display:block}
+
+/* pilares expandable */
+.pilares{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px}
+.pilar{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow);cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.pilar:hover{border-color:var(--accent);transform:translateY(-3px)}
+.pilar .pn{width:34px;height:34px;border-radius:9px;background:var(--accent-tint);color:var(--accent);font-family:"Sora";font-weight:700;display:flex;align-items:center;justify-content:center;font-size:16px}
+.pilar h3{margin:12px 0 4px;font-size:17px}
+.pilar .hint{font-size:13.5px;color:var(--ink-soft);margin:0}
+.pilar .detail{max-height:0;opacity:0;transition:.34s ease;font-size:13.5px;color:var(--ink-soft);line-height:1.5}
+.pilar.open{border-color:var(--accent);box-shadow:var(--shadow-lg)}
+.pilar.open .detail{max-height:220px;opacity:1;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line-strong)}
+.pilar .plus{position:absolute;top:18px;right:18px;color:var(--ink-faint);font-size:18px;transition:.25s}
+.pilar.open .plus{transform:rotate(45deg);color:var(--accent)}
+
+/* AS-IS / TO-BE toggle */
+.toggle-wrap{display:flex;align-items:center;gap:16px;margin-top:24px;flex-wrap:wrap}
+.switch{display:inline-flex;background:var(--surface-3);border:1px solid var(--line);border-radius:999px;padding:5px;position:relative}
+.switch button{border:0;background:transparent;padding:10px 22px;border-radius:999px;font-weight:600;font-size:14px;color:var(--ink-soft);position:relative;z-index:2;transition:.2s}
+.switch button.on{color:var(--on-accent)}
+.switch .glider{position:absolute;top:5px;bottom:5px;left:5px;width:calc(50% - 5px);border-radius:999px;background:var(--accent);transition:transform .3s cubic-bezier(.22,.61,.36,1);z-index:1}
+.switch[data-mode="tobe"] .glider{transform:translateX(100%);background:var(--tobe)}
+.switch[data-mode="tobe"] button.tobe{color:var(--on-accent)}
+.switch[data-mode="asis"] button.asis{color:var(--on-accent)}
+.switch button.tobe.on{color:var(--on-accent)}
+.example{margin-top:22px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.ex-head{display:flex;align-items:center;gap:12px;padding:14px 20px;font-weight:600;font-family:"Sora";border-bottom:1px solid var(--line);transition:.3s}
+.ex-head .tag{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:4px 10px;border-radius:6px}
+.mode-asis .ex-head{background:var(--asis-tint)} .mode-asis .ex-head .tag{background:var(--asis);color:#fff}
+.mode-tobe .ex-head{background:var(--tobe-tint)} .mode-tobe .ex-head .tag{background:var(--tobe);color:#fff}
+.ex-body{display:grid;grid-template-columns:1.4fr 1fr;gap:0}
+.ex-steps{padding:18px 20px;border-right:1px solid var(--line)}
+.ex-steps .s{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:14px;color:var(--ink);border-bottom:1px dashed var(--line)}
+.ex-steps .s:last-child{border-bottom:0}
+.ex-steps .s .d{width:8px;height:8px;border-radius:50%;flex:0 0 auto}
+.mode-asis .ex-steps .s .d{background:var(--asis)} .mode-tobe .ex-steps .s .d{background:var(--tobe)}
+.ex-metrics{padding:18px 20px;display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:start}
+.mtile .mv{font-family:"Sora";font-weight:800;font-size:26px;font-variant-numeric:tabular-nums}
+.mode-asis .mtile .mv{color:var(--asis)} .mode-tobe .mtile .mv{color:var(--tobe)}
+.mtile .ml{font-size:12px;color:var(--ink-soft);margin-top:2px}
+.disc{font-size:11.5px;color:var(--ink-faint);margin-top:12px;font-style:italic}
+
+/* process frentes */
+.frentes{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px}
+.frente{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow);cursor:pointer;transition:.2s;border-bottom:4px solid var(--line-strong)}
+.frente:hover,.frente.open{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-bottom-color:var(--accent)}
+.frente .ic{font-size:22px}
+.frente h3{margin:10px 0 2px;font-size:16px}
+.frente .role{font-size:12px;color:var(--ink-faint);font-family:"IBM Plex Mono";letter-spacing:.04em}
+.frente .detail{max-height:0;opacity:0;overflow:hidden;transition:.34s}
+.frente.open .detail{max-height:260px;opacity:1;margin-top:12px}
+.frente .detail .row{display:flex;gap:8px;font-size:13px;padding:6px 0;align-items:flex-start}
+.frente .detail .row .k{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.08em;padding:2px 7px;border-radius:5px;flex:0 0 auto;margin-top:1px}
+.frente .detail .k.a{background:var(--asis-tint);color:var(--asis)} .frente .detail .k.b{background:var(--tobe-tint);color:var(--tobe)}
+.frente .detail span{color:var(--ink-soft)}
+
+/* IA grid */
+.ia{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px}
+.ia .card{border-left:3px solid var(--accent)}
+.ia .card h3{font-size:16px;display:flex;align-items:center;gap:9px}
+.ia .card h3 .g{font-family:"IBM Plex Mono";font-size:12px;color:var(--accent)}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:22px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow);border-top:3px solid var(--accent)}
+.kpi .kv{font-family:"Sora";font-weight:800;font-size:30px;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1}
+.kpi .kl{font-size:13px;color:var(--ink-soft);margin-top:8px;line-height:1.4}
+.kpi .kt{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-top:6px}
+
+/* org */
+.org{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:16px;margin-top:26px;align-items:stretch}
+.org .card{display:flex;flex-direction:column}
+.org .center{border:2px solid var(--accent);background:var(--accent-tint);position:relative}
+.org .center .badge{align-self:flex-start;background:var(--accent);color:var(--on-accent);font-family:"IBM Plex Mono";font-size:11px;font-weight:600;padding:5px 11px;border-radius:7px;letter-spacing:.06em;margin-top:14px}
+.org-note{margin-top:18px;font-size:14px;color:var(--ink-soft);text-align:center}
+.org.reveal-on .card.reveal-item{opacity:0;transform:translateY(16px);transition:opacity .55s ease, transform .55s ease}
+.org.reveal-on .card.reveal-item.show{opacity:1;transform:none}
+.org-hint{margin-top:14px;text-align:center;font-family:"IBM Plex Mono";font-size:12.5px;letter-spacing:.06em;color:var(--accent);font-weight:600;min-height:18px;cursor:pointer;user-select:none}
+
+/* roadmap phase tabs */
+.phasebar{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.phasetab{flex:1 1 0;min-width:150px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:15px 18px;transition:.2s;box-shadow:var(--shadow)}
+.phasetab .pd{font-family:"IBM Plex Mono";font-size:11.5px;letter-spacing:.1em;color:var(--ink-faint)}
+.phasetab .pt{font-family:"Sora";font-weight:600;font-size:18px;margin-top:3px;color:var(--ink)}
+.phasetab.on{border-color:var(--accent);background:var(--accent-tint)}
+.phasetab.on .pd{color:var(--accent)}
+.phasepanel{margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 26px;box-shadow:var(--shadow);min-height:150px}
+.phasepanel ul{columns:2;column-gap:34px;margin:6px 0 0;padding-left:18px}
+.phasepanel li{margin:7px 0;font-size:14.5px;color:var(--ink-soft)}
+.phasepanel h3{margin:0 0 4px}
+
+/* definiciones AS-IS / TO-BE */
+.defs{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}
+.def{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surface);box-shadow:var(--shadow);border-left:4px solid var(--line-strong)}
+.def.a{border-left-color:var(--asis)}
+.def.b{border-left-color:var(--tobe)}
+.def b{font-family:"Sora";font-size:15px}
+.def.a b{color:var(--asis)}
+.def.b b{color:var(--tobe)}
+.def span{display:block;font-size:13px;color:var(--ink-soft);margin-top:3px}
+/* dos líneas de trabajo */
+.lineas{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;margin-top:26px;align-items:center}
+.linea{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow)}
+.linea.doc{border-top:4px solid var(--accent-2)}
+.linea.mej{border-top:4px solid var(--tobe)}
+.linea .ltag{font-family:"IBM Plex Mono";font-size:11px;letter-spacing:.14em;font-weight:600;color:var(--ink-faint)}
+.linea.doc .ltag{color:var(--accent-2)}
+.linea.mej .ltag{color:var(--tobe)}
+.linea h3{margin:8px 0 2px;font-size:20px}
+.linea .lhint{margin:0 0 10px;font-size:13.5px;color:var(--ink-soft)}
+.linea ul{margin:0;padding-left:18px;color:var(--ink-soft)}
+.linea li{margin:6px 0;font-size:14px}
+.linea .lout{margin-top:14px;padding-top:12px;border-top:1px dashed var(--line-strong);font-size:13px;color:var(--ink)}
+.cycle{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:130px}
+.cyc-top,.cyc-bot{font-size:11.5px;font-family:"IBM Plex Mono";text-align:center;max-width:140px;line-height:1.35;color:var(--ink-faint)}
+.cyc-ico{font-size:40px;color:var(--accent);animation:spin 9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* pilares agrupados */
+.pgroup{margin-top:20px}
+.pgroup .pilares{margin-top:10px}
+.glabel{font-family:"IBM Plex Mono";font-size:12px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;display:flex;align-items:center;gap:9px}
+.glabel::before{content:"";width:10px;height:10px;border-radius:3px;display:inline-block}
+.glabel.doc{color:var(--accent-2)}
+.glabel.doc::before{background:var(--accent-2)}
+.glabel.mej{color:var(--tobe)}
+.glabel.mej::before{background:var(--tobe)}
+.pilares.two{grid-template-columns:repeat(2,1fr)}
+.pilares.four{grid-template-columns:repeat(4,1fr)}
+/* sublíneas en modelo organizacional */
+.subline{font-family:"IBM Plex Mono";font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;margin-top:14px;display:flex;align-items:center;gap:7px}
+.subline::before{content:"";width:8px;height:8px;border-radius:2px;display:inline-block}
+.subline.doc{color:var(--accent-2)}
+.subline.doc::before{background:var(--accent-2)}
+.subline.mej{color:var(--tobe)}
+.subline.mej::before{background:var(--tobe)}
+.org .card .subline + ul{margin-top:6px}
+
+/* decision */
+.decide{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:24px}
+.ask{margin-top:22px;border-left:3px solid var(--tobe);background:var(--tobe-tint);padding:18px 22px;border-radius:0 14px 14px 0;font-family:"Sora";font-weight:500;font-size:16px;line-height:1.45;color:var(--ink)}
+
+/* ============ NAV / FOOTER ============ */
+.footer{
+  flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:12px 34px;border-top:1px solid var(--line);background:var(--surface);z-index:40;
+}
+.foot-left{font-size:11.5px;color:var(--ink-faint);font-family:"IBM Plex Mono";letter-spacing:.04em}
+.dots{display:flex;gap:7px;align-items:center}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--line-strong);border:0;padding:0;transition:.2s}
+.dot.active{background:var(--accent);transform:scale(1.25)}
+.navbtns{display:flex;gap:8px;align-items:center}
+.navbtns .count{font-family:"IBM Plex Mono";font-size:13px;color:var(--ink-soft);min-width:52px;text-align:center}
+
+/* menu overlay */
+.menu{position:absolute;inset:0;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(6px);z-index:60;display:none;padding:40px;overflow:auto}
+.menu.show{display:block;animation:slidein .3s ease}
+.menu .wrap{max-width:820px}
+.menu h2{margin:0 0 20px}
+.menu ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.menu li{display:flex;gap:14px;align-items:baseline;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer;transition:.16s}
+.menu li:hover{border-color:var(--accent);transform:translateX(3px)}
+.menu li .mi{font-family:"IBM Plex Mono";font-size:12px;color:var(--accent);font-weight:600}
+.menu li .mt{font-family:"Sora";font-weight:600;font-size:15px}
+.menu .close{position:absolute;top:24px;right:30px}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width:920px){
+  body{overflow:auto}
+  .stage{height:auto}
+  .topbar{position:sticky;top:0}
+  .slides{position:static}
+  .slide{position:static;display:none;min-height:auto;padding:40px 22px}
+  .slide.active{display:flex}
+  .g2,.g3,.g4,.compare,.pilares,.pilares.two,.pilares.four,.steps,.ia,.kpis,.org,.decide,.frentes,.lineas,.defs{grid-template-columns:1fr}
+  .flow{flex-direction:column}
+  .node:not(:last-child){margin-right:0;margin-bottom:26px}
+  .node:not(:last-child)::after{right:50%;top:auto;bottom:-23px;transform:translateX(50%);content:"↓"}
+  .ex-body{grid-template-columns:1fr}.ex-steps{border-right:0;border-bottom:1px solid var(--line)}
+  .phasepanel ul{columns:1}
+  .menu ol{grid-template-columns:1fr}
+  .footer{position:sticky;bottom:0}
+  .brand-tag,.meta .doc{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="stage" id="stage">
+
+  <!-- ===== HEADER ===== -->
+  <header class="topbar">
+    <div class="brand">
+      <img class="brandlogo" src="data:image/png;base64,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" alt="Andrómeda Tech & Ventures">
+      <div class="brand-divider"></div>
+      <div class="brand-tag">Proyectos + Procesos</div>
+    </div>
+    <div class="meta">
+      <div class="doc"><b>Propuesta a Dirección</b><br>v4.3 · 27 ago 2026</div>
+      <button class="iconbtn" id="themeBtn" title="Cambiar tema" aria-label="Cambiar tema claro/oscuro">◑</button>
+      <button class="iconbtn wide" id="menuBtn" aria-label="Ver índice">☰ Índice</button>
+    </div>
+  </header>
+
+  <!-- ===== SLIDES ===== -->
+  <div class="slides" id="slides">
+
+    <!-- 0 · PORTADA -->
+    <section class="slide active">
+      <div class="wrap">
+        <div class="eyebrow">Propuesta ejecutiva · Alta Dirección</div>
+        <h1>De Gerencia de Proyectos<br>a Gerencia de <span class="accent">Proyectos + Procesos</span></h1>
+        <p class="lead">Ampliar el alcance gerencial para conectar ejecución, mejora continua, automatización e inteligencia artificial —con resultados medibles para Andrómeda.</p>
+        <div class="pills">
+          <span class="pill"><i></i>Proyectos</span>
+          <span class="pill"><i></i>Procesos</span>
+          <span class="pill"><i></i>KPIs</span>
+          <span class="pill"><i></i>Automatización</span>
+          <span class="pill"><i></i>IA aplicada</span>
+        </div>
+        <div class="thesis">Proyectos transforma. Procesos optimiza. Los datos lo demuestran. La IA lo acelera.</div>
+        <p class="sub">Presentada por Luis E. Salazar · Gerencia de Proyectos</p>
+      </div>
+    </section>
+
+    <!-- 1 · OPORTUNIDAD -->
+    <section class="slide">
+      <div class="wrap">
+        <div class="eyebrow">01 · La oportunidad</div>
+        <h2>¿Por qué integrar Proyectos y Procesos?</h2>
+        <p class="lead">Hoy la Gerencia de Proyectos gestiona proyectos, lidera implementaciones de células ágiles, establece marcos de trabajo sólidos y eficientes, y garantiza el correcto funcionamiento de las células en Andrómeda. Administra la plataforma principal de gestión de productividad de los equipos de la compañía y acompaña procesos de automatización, optimizaciones y aplicación de IA.</p>
+        <p class="lead" style="margin-top:14px">Cuando un proyecto termina, el proceso que genera es una <span class="accent">oportunidad enorme</span> de enmarcarlo dentro de toda la gestión de procesos que a continuación se propone.</p>
+        <div class="compare">
+          <div class="card p">
+            <div class="label">Gestión de Proyectos · hoy</div>
+            <div class="verb">Transformar</div>
+            <p>Priorizar iniciativas, ejecutar cambios, coordinar equipos, gestionar riesgos/cambios, gestionar relaciones con stakeholders y entregar resultados.</p>
+          </div>
+          <div class="card pr">
+            <div class="label">Gestión de Procesos · propuesta</div>
+            <div class="verb">Acompañar y Optimizar</div>
+            <p>Entender cómo opera la organización, medir el desempeño, detectar fricciones y mejorar de forma sistemática. Acompañar la implementación de nuevos productos.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 · VISIÓN -->
+    <section class="slide">
+      <div class="wrap">
+        <div class="eyebrow">02 · La visión</div>
+        <h2>Procesos: más allá de un repositorio documental, con <span class="accent">capacidad elevada de mejora</span></h2>
+        <p class="lead">Cinco movimientos encadenados. Pasa el cursor o toca cada uno.</p>
+        <div class="steps" id="visionSteps">
+          <div class="step on" data-d="Mapa de procesos, dueños (owners), roles, documentación viva y gobierno claro."><div class="num">01</div><strong>Gestionar</strong><small>Mapa, owners, roles y gobierno.</small></div>
+          <div class="step" data-d="Líneas base, tiempos de ciclo, SLA, errores, retrabajo y costo por proceso."><div class="num">02</div><strong>Medir</strong><small>Baselines, SLA, retrabajo, costo.</small></div>
+          <div class="step" data-d="Eliminar fricción, quitar pasos que no agregan valor, simplificar y rediseñar."><div class="num">03</div><strong>Mejorar</strong><small>Simplificar y rediseñar.</small></div>
+          <div class="step" data-d="Workflows, integraciones y APIs con las herramientas corporativas — solo donde agregue valor."><div class="num">04</div><strong>Automatizar</strong><small>Workflows, integraciones, APIs.</small></div>
+          <div class="step" data-d="Rediseñar procesos y modelos operativos completos cuando el cambio lo amerite."><div class="num">05</div><strong>Transformar</strong><small>Rediseñar modelos operativos.</small></div>
+        </div>
+        <div class="thesis" id="visionDetail">Mapa de procesos, dueños (owners), roles, documentación viva y gobierno claro.</div>
+        <p class="sub"><b>Principio rector:</b> no automatizar ineficiencias. Primero simplificar, después automatizar.</p>
+      </div>
+    </section>
+
+    <!-- 3 · DOS LÍNEAS DE TRABAJO -->
+    <section class="slide">
+      <div class="wrap">
+        <div class="eyebrow">03 · Cómo trabajaría el área</div>
+        <h2>Dos líneas de trabajo que se alimentan</h2>
+        <p class="lead">La Gestión de Procesos no solo <span class="accent">documenta de forma permanente</span>: también mejora. Son dos líneas de una misma función, en ciclo continuo.</p>
+        <div class="lineas">
+          <div class="linea doc">
+            <div class="ltag">LÍNEA A</div>
+            <h3>Documentar y estandarizar</h3>
+            <p class="lhint">La base firme de la operación.</p>
+            <ul>
+              <li>Mapa de procesos y procedimientos / SOP</li>
+              <li>Políticas, roles y controles</li>
+              <li>Base de conocimiento viva y versionada</li>
+            </ul>
+            <div class="lout">Aporta: orden, cumplimiento, trazabilidad y onboarding.</div>
+          </div>
+          <div class="cycle" aria-hidden="true">
+            <div class="cyc-top">da la línea base →</div>
+            <div class="cyc-ico">⟳</div>
+            <div class="cyc-bot">← genera nueva documentación</div>
+          </div>
+          <div class="linea mej">
+            <div class="ltag">LÍNEA B</div>
+            <h3>Mejorar y transformar</h3>
+            <p class="lhint">El motor de valor.</p>
+            <ul>
+              <li>AS-IS → TO-BE y análisis de mejora</li>
+              <li>KPIs, automatización e IA</li>
+              <li>Rediseño de procesos y modelos</li>
+            </ul>
+            <div class="lout">Aporta: eficiencia, ahorro y capacidad liberada.</div>
+          </div>
+        </div>
+        <div class="thesis">Sin documentación no hay línea base contra la cual medir la mejora; sin mejora, la documentación se vuelve archivo muerto. Documentar y mejorar son un ciclo, no dos cajas.</div>
+      </div>
+    </section>
+
+    <!-- 4 · PILARES -->
+    <section class="slide">
+      <div class="wrap">
+        <div class="eyebrow">04 · Los pilares</div>
+        <h2>Los pilares, en dos líneas de trabajo</h2>
+        <p class="lead">KPIs e IA no son áreas paralelas: viven <span class="accent">dentro</span> de la gestión. Toca un pilar para ver el detalle.</p>
+        <div class="pgroup">
+          <div class="glabel doc">Línea A · Documentar y estandarizar</div>
+          <div class="pilares two">
+            <div class="pilar" data-detail="Mapa de procesos, Process Owners, estándares, roles, políticas, controles y ciclo de revisión periódica."><span class="plus">+</span><div class="pn">1</div><h3>Gobierno</h3><p class="hint">Quién es dueño de qué, con qué reglas.</p><div class="detail">Mapa de procesos, Process Owners, estándares, roles, políticas, controles y ciclo de revisión periódica.</div></div>
+            <div class="pilar" data-detail="Procedimientos y SOP, base de conocimiento actualizada y control de versiones — la fuente única de cómo opera cada proceso."><span class="plus">+</span><div class="pn">2</div><h3>Documentación viva</h3><p class="hint">La fuente única de cómo se opera.</p><div class="detail">Procedimientos y SOP, base de conocimiento actualizada y control de versiones — la fuente única de cómo opera cada proceso. Cada mejora la mantiene al día.</div></div>
+          </div>
+        </div>
+        <div class="pgroup">
+          <div class="glabel mej">Línea B · Mejorar y transformar</div>
+          <div class="pilares four">
+            <div class="pilar" data-detail="KPIs por proceso, SLA, cycle time, calidad, volumen, retrabajo, costo y cumplimiento — visibles en un tablero."><span class="plus">+</span><div class="pn">3</div><h3>Desempeño</h3><p class="hint">Todo proceso se mide.</p><div class="detail">KPIs por proceso, SLA, cycle time, calidad, volumen, retrabajo, costo y cumplimiento — visibles en un tablero ejecutivo.</div></div>
+            <div class="pilar" data-detail="Levantamiento AS-IS, identificación de pain points, análisis causal, simplificación y diseño del TO-BE."><span class="plus">+</span><div class="pn">4</div><h3>Mejora continua</h3><p class="hint">AS-IS → TO-BE, una y otra vez.</p><div class="detail">Levantamiento AS-IS, identificación de pain points, análisis causal, simplificación y diseño del TO-BE.</div></div>
+            <div class="pilar" data-detail="ClickUp, Odoo, n8n, APIs y flujos digitales para reducir actividades manuales y errores."><span class="plus">+</span><div class="pn">5</div><h3>Automatización</h3><p class="hint">Menos trabajo manual.</p><div class="detail">ClickUp, Odoo, n8n, APIs y flujos digitales para reducir actividades manuales y errores — después de simplificar.</div></div>
+            <div class="pilar" data-detail="IA integrada al ciclo para analizar, documentar, detectar patrones y acelerar mejoras — siempre ligada a un KPI."><span class="plus">+</span><div class="pn">6</div><h3>IA aplicada</h3><p class="hint">Acelerador, no fin en sí mismo.</p><div class="detail">IA integrada al ciclo para analizar, documentar, detectar patrones y acelerar mejoras — siempre ligada a un KPI.</div></div>
+          </div>
+        </div>
+        <p class="disc">El resultado: una función que no solo documenta — mide, mejora y genera valor verificable.</p>
+      </div>
+    </section>
+
+    <!-- 4 · METODOLOGÍA AS-IS/TO-BE -->
+    <section class="slide">
+      <div class="wrap mode-asis" id="methodWrap">
+        <div class="eyebrow">05 · La metodología</div>
+        <h2>Del proceso actual al proceso mejorado</h2>
+        <div class="flow">
+          <div class="node"><div class="k">01</div><div class="t">Identificar</div></div>
+          <div class="node"><div class="k">02</div><div class="t">AS-IS</div></div>
+          <div class="node"><div class="k">03</div><div class="t">Medir</div></div>
+          <div class="node"><div class="k">04</div><div class="t">Analizar</div></div>
+          <div class="node"><div class="k">05</div><div class="t">TO-BE</div></div>
+          <div class="node"><div class="k">06</div><div class="t">Implementar</div></div>
+          <div class="node"><div class="k">07</div><div class="t">Medir de nuevo</div></div>
+        </div>
+        <div class="defs">
+          <div class="def a"><b>AS-IS · el estado actual</b><span>La radiografía de cómo se hacen las cosas hoy.</span></div>
+          <div class="def b"><b>TO-BE · el estado futuro</b><span>El diseño de cómo se harán las cosas mañana.</span></div>
+        </div>
+        <div class="toggle-wrap">
+          <span style="font-size:14px;color:var(--ink-soft)">Ejemplo — proceso de <b style="color:var(--ink)">Compras</b>:</span>
+          <div class="switch" data-mode="asis" id="switch">
+            <span class="glider"></span>
+            <button class="asis on" data-m="asis">AS-IS · hoy</button>
+            <button class="tobe" data-m="tobe">TO-BE · mañana</button>
+          </div>
+        </div>
+        <div class="example">
+          <div class="ex-head"><span class="tag" id="exTag">AS-IS</span><span id="exTitle">Cómo funciona hoy</span></div>
+          <div class="ex-body">
+            <div class="ex-steps" id="exSteps"></div>
+            <div class="ex-metrics" id="exMetrics"></div>
+          </div>
+        </div>
+        <p class="disc" id="exDisc">Cifras ilustrativas para explicar el método; se sustituyen por las mediciones reales del levantamiento AS-IS.</p>
+      </div>
+    </section>
+
+    <!-- FRENTES ANDROVENT (oculta) -->
+    <section class="slide" data-skip>
+      <div class="wrap">
+        <div class="eyebrow">06 · Aterrizaje en Andrómeda</div>
+        <h2>Cuatro frentes prioritarios para arrancar</h2>
+        <p class="lead">Los procesos que más pesan hoy y donde una mejora se nota rápido. Toca cada uno para ver el foco.</p>
+        <div class="frentes" id="frentes">
+          <div class="frente" data-frente>
+            <div class="ic">🎯</div><h3>Ventas y atención</h3><div class="role">CICLO COMERCIAL</div>
+            <div class="detail">
+              <div class="row"><span class="k a">HOY</span><span>Cotizaciones y seguimiento dispersos; reclamos sin trazabilidad.</span></div>
+              <div class="row"><span class="k b">META</span><span>Flujo único, SLA de respuesta y postventa medida.</span></div>
+            </div>
+          </div>
+          <div class="frente" data-frente>
+            <div class="ic">💳</div><h3>Cobranzas y facturación</h3><div class="role">FLUJO DE CAJA</div>
+            <div class="detail">
+              <div class="row"><span class="k a">HOY</span><span>Facturación manual, cuentas por cobrar sin alertas.</span></div>
+              <div class="row"><span class="k b">META</span><span>Facturación integrada, seguimiento automático, DSO a la baja.</span></div>
+            </div>
+          </div>
+          <div class="frente" data-frente>
+            <div class="ic">📦</div><h3>Compras y abastecimiento</h3><div class="role">SOLICITUD → PAGO</div>
+            <div class="detail">
+              <div class="row"><span class="k a">HOY</span><span>Aprobaciones por correo, datos duplicados, sin SLA.</span></div>
+              <div class="row"><span class="k b">META</span><span>Aprobación por reglas, trazabilidad total, ciclo más corto.</span></div>
+            </div>
+          </div>
+          <div class="frente" data-frente>
+            <div class="ic">🚚</div><h3>Operaciones y entrega</h3><div class="role">CUMPLIMIENTO</div>
+            <div class="detail">
+              <div class="row"><span class="k a">HOY</span><span>Entregas sin indicador de cumplimiento ni tablero.</span></div>
+              <div class="row"><span class="k b">META</span><span>SLA de entrega, tablero operativo y menos retrabajo.</span></div>
+            </div>
+          </div>
+        </div>
+        <p class="disc">Foco inicial del piloto de 90 días. La priorización final saldrá del diagnóstico de madurez.</p>
+      </div>
+    </section>
+
+    <!-- 6 · IA -->
+    <section class="slide">
+      <div class="wrap">
+        <div class="eyebrow">06 · IA aplicada a procesos</div>
+        <h2>IA como acelerador de la gestión, no como iniciativa paralela</h2>
+        <div class="ia">
+          <div class="card"><h3><span class="g">A</span>Analizar</h3><p>Documentación, incidencias, causas recurrentes y puntos de fricción.</p></div>
+          <div class="card"><h3><span class="g">B</span>Documentar</h3><p>Borradores de procedimientos, resúmenes de talleres y comparación de versiones.</p></div>
+          <div class="card"><h3><span class="g">C</span>Diseñar</h3><p>Apoyo en escenarios TO-BE, reglas, controles y oportunidades de simplificación.</p></div>
+          <div class="card"><h3><span class="g">D</span>Consultar</h3><p>Asistentes internos para políticas, procedimientos y conocimiento operativo.</p></div>
+          <div class="card"><h3><span class="g">E</span>Automatizar</h3><p>Clasificación, extracción, enrutamiento, notificaciones y tareas repetitivas.</p></div>
+          <div class="card"><h3><span class="g">F</span>Medir</h3><p>Todo caso de IA se vincula a tiempo, calidad, ahorro o reducción de carga manual.</p></div>
+        </div>
+        <div class="thesis" style="margin-top:22px">Regla de oro: <span class="mono">Problema → uso de IA → resultado → KPI.</span></div>
+      </div>
+    </section>
+
+    <!-- 7 · KPIs -->
+    <section class="slide">
+      <div class="wrap">
+        <div class="eyebrow">07 · Cómo se mide</div>
+        <h2>Medir el gobierno <span class="accent">y</span> medir el impacto</h2>
+        <p class="lead">No cuántos procesos documentamos, sino cuánto mejora la organización. Metas ilustrativas:</p>
+        <div class="kpis" id="kpis">
+          <div class="kpi"><div class="kv" data-to="100" data-suf="%">0%</div><div class="kl">Procesos críticos con Process Owner definido</div><div class="kt">Gobierno</div></div>
+          <div class="kpi"><div class="kv" data-to="100" data-suf="%">0%</div><div class="kl">Procesos con KPI y revisión vigente</div><div class="kt">Gobierno</div></div>
+          <div class="kpi"><div class="kv" data-to="40" data-pre="−" data-suf="%">0%</div><div class="kl">Reducción de tiempo de ciclo (antes vs. después)</div><div class="kt">Impacto</div></div>
+          <div class="kpi"><div class="kv" data-to="60" data-pre="−" data-suf="%">0%</div><div class="kl">Reducción de retrabajo, errores e incidencias</div><div class="kt">Impacto</div></div>
+          <div class="kpi"><div class="kv" data-to="50" data-pre="−" data-suf="%">0%</div><div class="kl">Actividades manuales eliminadas por automatización</div><div class="kt">Impacto</div></div>
+          <div class="kpi"><div class="kv" data-to="100" data-pre="+" data-suf=" h">0</div><div class="kl">Horas de capacidad operativa liberada / mes</div><div class="kt">Impacto</div></div>
+          <div class="kpi"><div class="kv" data-to="95" data-suf="%">0%</div><div class="kl">Cumplimiento de SLA en procesos clave</div><div class="kt">Servicio</div></div>
+          <div class="kpi"><div class="kv" data-to="3" data-suf="" data-pre="">0</div><div class="kl">Cantidad de entregables demostrables en (días)</div><div class="kt">Valor</div></div>
+        </div>
+        <p class="disc">Valores referenciales para ilustrar el tablero; las metas reales se fijan tras medir la línea base.</p>
+      </div>
+    </section>
+
+    <!-- 8 · ORG -->
+    <section class="slide">
+      <div class="wrap">
+        <div class="eyebrow">08 · El modelo</div>
+        <h2>Estructura organizacional propuesta</h2>
+        <div class="org reveal-on" id="orgReveal">
+          <div class="card reveal-item">
+            <div class="label">Frente 1</div>
+            <h3>Gestión de Proyectos</h3>
+            <ul><li>Portafolio y priorización de iniciativas por líneas de negocio</li><li>Ejecución de iniciativas en células ágiles</li><li>Gestión de comunicaciones y stakeholders</li><li>Recursos y presupuestos</li><li>Dashboards ejecutivos</li><li>Automatizaciones y optimizaciones</li><li>Administración de plataformas de productividad (ClickUp)</li><li>Acompañamiento y adopción de OKRs</li><li>Entre otras</li></ul>
+          </div>
+          <div class="card center">
+            <div class="label" style="color:var(--accent)">La gerencia</div>
+            <h3>Gerencia de Proyectos y Procesos</h3>
+            <p style="color:var(--ink)">Conecta estrategia, ejecución, mejora continua y transformación bajo un mismo mando.</p>
+            <span class="badge">MANDATO TRANSVERSAL</span>
+          </div>
+          <div class="card reveal-item">
+            <div class="label">Frente 2</div>
+            <h3>Gestión de Procesos</h3>
+            <div class="subline doc">Documentar y estandarizar</div>
+            <ul><li>Mapa de procesos y SOP</li><li>Políticas y controles</li><li>Base de conocimiento</li></ul>
+            <div class="subline mej">Mejorar y transformar</div>
+            <ul><li>KPIs · AS-IS / TO-BE</li><li>Automatización e IA</li></ul>
+          </div>
+        </div>
+        <p class="org-hint" id="orgHint"></p>
+        <p class="org-note"><b>Los Process Owners permanecen en las áreas.</b> La Gerencia define el método, gobierna, facilita y mide — no absorbe la operación.</p>
+      </div>
+    </section>
+
+    <!-- 90 DÍAS (oculta) -->
+    <section class="slide" data-skip>
+      <div class="wrap">
+        <div class="eyebrow">10 · Plan de aterrizaje</div>
+        <h2>Primeros 90 días: entender, priorizar y demostrar</h2>
+        <div class="phasebar" id="phasebar">
+          <button class="phasetab on" data-p="0"><div class="pd">DÍAS 1–30</div><div class="pt">Entender</div></button>
+          <button class="phasetab" data-p="1"><div class="pd">DÍAS 31–60</div><div class="pt">Priorizar y diseñar</div></button>
+          <button class="phasetab" data-p="2"><div class="pd">DÍAS 61–90</div><div class="pt">Implementar y demostrar</div></button>
+        </div>
+        <div class="phasepanel" id="phasepanel"></div>
+        <p class="sub">Al día 90, Dirección podrá responder: qué procesos tenemos, cómo funcionan, qué mejorar primero y qué valor estamos generando.</p>
+      </div>
+    </section>
+
+    <!-- DECISIÓN (oculta) -->
+    <section class="slide" data-skip>
+      <div class="wrap">
+        <div class="eyebrow">09 · Decisión ejecutiva</div>
+        <h2>Qué se requiere para formalizar la ampliación</h2>
+        <div class="decide">
+          <div class="card">
+            <div class="label">Premisas del Rol</div>
+            <ul><li>Alcance de Procesos</li><li>Áreas cubiertas</li><li>Nivel de autoridad</li><li>Equipo asignado</li></ul>
+          </div>
+          <div class="card">
+            <div class="label">Alinear la posición</div>
+            <ul><li>Nombre del cargo</li><li>Recursos</li><li>Compensación</li><li>Fecha estimada para la incorporación de nuevas funciones</li></ul>
+          </div>
+        </div>
+        <div class="ask">“La organización está redefiniendo el alcance y el nivel de responsabilidad de la posición; corresponde revisar de forma integral cargo, autoridad, objetivos, recursos y compensación.”</div>
+        <p class="sub">Propuesta para conversación con COO / CEO.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ===== FOOTER NAV ===== -->
+  <footer class="footer">
+    <div class="foot-left">Andrómeda · Confidencial · v4.3</div>
+    <div class="dots" id="dots"></div>
+    <div class="navbtns">
+      <button class="iconbtn" id="prev" aria-label="Anterior">←</button>
+      <span class="count" id="count">01 / 09</span>
+      <button class="iconbtn" id="next" aria-label="Siguiente">→</button>
+    </div>
+  </footer>
+
+  <!-- ===== MENU ===== -->
+  <div class="menu" id="menu">
+    <div class="wrap">
+      <button class="iconbtn close" id="menuClose" aria-label="Cerrar índice">✕</button>
+      <h2>Índice</h2>
+      <ol id="menuList"></ol>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.slide:not([data-skip])'));
+  var titles = ["Portada","La oportunidad","La visión","Dos líneas de trabajo","Los pilares","La metodología","IA aplicada","Cómo se mide","El modelo"];
+  var i = 0, total = slides.length;
+  var dots = document.getElementById('dots');
+  var count = document.getElementById('count');
+  var menuList = document.getElementById('menuList');
+
+  // build dots + menu
+  slides.forEach(function(_, x){
+    var d = document.createElement('button');
+    d.className = 'dot' + (x===0?' active':''); d.setAttribute('aria-label','Ir a '+titles[x]);
+    d.onclick = function(){ go(x); };
+    dots.appendChild(d);
+    var li = document.createElement('li');
+    li.innerHTML = '<span class="mi">'+String(x).padStart(2,'0')+'</span><span class="mt">'+titles[x]+'</span>';
+    li.onclick = function(){ go(x); closeMenu(); };
+    menuList.appendChild(li);
+  });
+
+  function pad(n){ return String(n+1).padStart(2,'0'); }
+  function go(n){
+    i = (n+total)%total;
+    slides.forEach(function(s,x){ s.classList.toggle('active', x===i); });
+    Array.prototype.forEach.call(dots.children, function(d,x){ d.classList.toggle('active', x===i); });
+    count.textContent = pad(i)+' / '+String(total).padStart(2,'0');
+    if(slides[i] && slides[i].querySelector('.kpi')) animateKPIs();
+    if(slides[i] && slides[i].querySelector('#orgReveal')) orgReset();
+  }
+  document.getElementById('next').onclick = function(){ go(i+1); };
+  document.getElementById('prev').onclick = function(){ go(i-1); };
+  document.addEventListener('keydown', function(e){
+    if(document.getElementById('menu').classList.contains('show')){ if(e.key==='Escape') closeMenu(); return; }
+    if(['ArrowRight','PageDown',' '].indexOf(e.key)>-1){ e.preventDefault(); go(i+1); }
+    if(['ArrowLeft','PageUp'].indexOf(e.key)>-1){ e.preventDefault(); go(i-1); }
+    if(e.key==='Home') go(0);
+    if(e.key==='End') go(total-1);
+  });
+
+  // menu
+  var menu = document.getElementById('menu');
+  function closeMenu(){ menu.classList.remove('show'); }
+  document.getElementById('menuBtn').onclick = function(){ menu.classList.toggle('show'); };
+  document.getElementById('menuClose').onclick = closeMenu;
+
+  // theme toggle
+  var root = document.documentElement;
+  document.getElementById('themeBtn').onclick = function(){
+    var cur = root.getAttribute('data-theme');
+    if(!cur){ cur = matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light'; }
+    root.setAttribute('data-theme', cur==='dark' ? 'light' : 'dark');
+  };
+
+  // vision steps
+  var vSteps = document.querySelectorAll('#visionSteps .step');
+  var vDetail = document.getElementById('visionDetail');
+  vSteps.forEach(function(s){
+    function act(){ vSteps.forEach(function(x){x.classList.remove('on');}); s.classList.add('on'); vDetail.textContent = s.getAttribute('data-d'); }
+    s.addEventListener('mouseenter', act); s.addEventListener('click', act);
+  });
+
+  // pilares expand
+  document.querySelectorAll('.pilar[data-detail]').forEach(function(p){
+    p.onclick = function(){ p.classList.toggle('open'); };
+  });
+
+  // frentes expand
+  document.querySelectorAll('#frentes [data-frente]').forEach(function(f){
+    f.onclick = function(){ f.classList.toggle('open'); };
+  });
+
+  // AS-IS / TO-BE
+  var DATA = {
+    asis: {
+      title: "Cómo funciona hoy",
+      steps: ["Solicitud por correo al gerente","Aprobación manual","Correo a Administración","Búsqueda de proveedor y cotización","Aprobación de Finanzas","Orden de compra y pago"],
+      metrics: [["5 días","Tiempo de ciclo"],["4","Aprobaciones"],["12","Pasos manuales"],["Baja","Trazabilidad"]]
+    },
+    tobe: {
+      title: "Cómo queremos que funcione",
+      steps: ["Solicitud digital","Validación automática","Aprobación por reglas según monto","Solicitud generada al proveedor","Finanzas y pago integrados","Dashboard y alertas del proceso"],
+      metrics: [["2 días","Tiempo de ciclo"],["2","Aprobaciones"],["5","Pasos manuales"],["100%","Trazabilidad"]]
+    }
+  };
+  var mWrap = document.getElementById('methodWrap');
+  var sw = document.getElementById('switch');
+  function renderMode(m){
+    var d = DATA[m];
+    mWrap.className = 'wrap mode-'+m;
+    sw.setAttribute('data-mode', m);
+    Array.prototype.forEach.call(sw.querySelectorAll('button'), function(b){ b.classList.toggle('on', b.getAttribute('data-m')===m); });
+    document.getElementById('exTag').textContent = m==='asis' ? 'AS-IS' : 'TO-BE';
+    document.getElementById('exTitle').textContent = d.title;
+    document.getElementById('exSteps').innerHTML = d.steps.map(function(s){ return '<div class="s"><span class="d"></span>'+s+'</div>'; }).join('');
+    document.getElementById('exMetrics').innerHTML = d.metrics.map(function(m2){ return '<div class="mtile"><div class="mv">'+m2[0]+'</div><div class="ml">'+m2[1]+'</div></div>'; }).join('');
+  }
+  Array.prototype.forEach.call(sw.querySelectorAll('button'), function(b){
+    b.onclick = function(){ renderMode(b.getAttribute('data-m')); };
+  });
+  renderMode('asis');
+
+  // KPIs count-up
+  var kpiDone = false;
+  function animateKPIs(){
+    if(kpiDone) return; kpiDone = true;
+    var reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
+    document.querySelectorAll('#kpis .kv').forEach(function(el){
+      var to = parseFloat(el.getAttribute('data-to'));
+      var pre = el.getAttribute('data-pre')||'', suf = el.getAttribute('data-suf')||'';
+      if(reduce){ el.textContent = pre+to+suf; return; }
+      var start = null, dur = 1100;
+      function tick(ts){
+        if(!start) start = ts;
+        var p = Math.min((ts-start)/dur, 1);
+        var e = 1-Math.pow(1-p,3);
+        el.textContent = pre+Math.round(to*e)+suf;
+        if(p<1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  // roadmap phases
+  var PHASES = [
+    {h:"Entender", items:["Inventario de procesos","Mapa corporativo","Identificar owners","Diagnóstico de madurez","Backlog inicial de mejoras"]},
+    {h:"Priorizar y diseñar", items:["3–5 procesos críticos","Levantar AS-IS + línea base","Diseñar TO-BE","Definir KPIs","Casos de automatización / IA"]},
+    {h:"Implementar y demostrar", items:["Quick wins","Primeras automatizaciones","Dashboard inicial","Resultados AS-IS vs. TO-BE","Roadmap a 6 meses"]}
+  ];
+  var panel = document.getElementById('phasepanel');
+  function renderPhase(p){
+    var d = PHASES[p];
+    panel.innerHTML = '<h3>'+d.h+'</h3><ul>'+d.items.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul>';
+  }
+  document.querySelectorAll('#phasebar .phasetab').forEach(function(t){
+    t.onclick = function(){
+      document.querySelectorAll('#phasebar .phasetab').forEach(function(x){x.classList.remove('on');});
+      t.classList.add('on'); renderPhase(parseInt(t.getAttribute('data-p'),10));
+    };
+  });
+  renderPhase(0);
+
+  // reveal progresivo del modelo organizacional (La Gerencia -> Frente 1 -> Frente 2)
+  var org = document.getElementById('orgReveal');
+  var orgHint = document.getElementById('orgHint');
+  var orgItems = org ? org.querySelectorAll('.reveal-item') : [];
+  var orgStep = 0;
+  function orgRender(){
+    orgItems.forEach(function(el,idx){ el.classList.toggle('show', idx < orgStep); });
+    if(orgHint){
+      if(orgStep===0) orgHint.textContent = 'Haz clic para mostrar el Frente 1 ▸';
+      else if(orgStep===1) orgHint.textContent = 'Haz clic para mostrar el Frente 2 ▸';
+      else orgHint.textContent = '';
+    }
+  }
+  function orgReset(){ orgStep = 0; orgRender(); }
+  function orgAdvance(e){ if(e){ e.stopPropagation(); } if(orgStep < orgItems.length){ orgStep++; orgRender(); } }
+  if(org){
+    org.style.cursor = 'pointer';
+    org.addEventListener('click', orgAdvance);
+    if(orgHint) orgHint.addEventListener('click', orgAdvance);
+    orgRender();
+  }
+})();
+</script>
