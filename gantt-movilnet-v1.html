@@ -183,7 +183,7 @@ html[data-theme="light"] .resp-movilnet-cntm { background: rgba(80,60,200,0.08);
 .task-row { overflow: visible; }
 
 /* ── MONTH HEADER ── */
-.month-header { display: grid; margin-left: 520px; margin-bottom: 6px; }
+.month-header { display: grid; margin-left: 512px; margin-bottom: 6px; }
 .month-cell {
   font-size: 9.5px; font-weight: 600;
   color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em;
@@ -227,7 +227,7 @@ html[data-theme="light"] .resp-movilnet-cntm { background: rgba(80,60,200,0.08);
 .task-row:hover .track { background: var(--bg-track-alt); }
 
 .task-left {
-  width: 520px; min-width: 520px;
+  width: 512px; min-width: 512px;
   display: flex; align-items: center;
   gap: 8px; padding-right: 14px; flex-shrink: 0;
 }
@@ -277,8 +277,23 @@ html[data-theme="light"] .resp-movilnet-cntm { background: rgba(80,60,200,0.08);
   text-transform: uppercase; letter-spacing: 0.08em;
 }
 .col-header-task    { width: 300px; min-width: 300px; text-align: center; }
+.col-header-fecha   { width: 92px;  min-width: 92px;  text-align: center; }
 .col-header-resp    { width: 110px; min-width: 110px; text-align: center; }
 .col-header-months  { flex: 1; }
+
+/* ── COLUMNA FECHA FINALIZACIÓN ── */
+.fecha-col {
+  width: 92px; min-width: 92px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 6px;
+}
+.fecha-val {
+  font-size: 11px; color: var(--text-second);
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.fecha-val.completado { color: var(--text-faint); }
+.fecha-val.vencida    { color: #ff7a74; font-weight: 600; }
+.fecha-val.por-definir { color: var(--text-faint); font-style: italic; font-size: 10px; }
 
 /* ── TRACK ── */
 .track { flex: 1; height: 28px; position: relative; border-radius: 4px; transition: background 0.15s; }
@@ -409,9 +424,11 @@ html[data-theme="light"] .resp-movilnet-cntm { background: rgba(80,60,200,0.08);
 
 /* ── Breakpoints ── */
 @media (max-width: 1100px) {
-  .task-left, .col-header-task { width: 240px; min-width: 240px; }
-  .month-header { margin-left: 350px; }
+  .task-left { width: 424px; min-width: 424px; }
+  .col-header-task { width: 232px; min-width: 232px; }
+  .month-header { margin-left: 424px; }
   .resp-col, .col-header-resp { width: 100px; min-width: 100px; }
+  .fecha-col, .col-header-fecha { width: 84px; min-width: 84px; }
   .page-header, .legend, .gantt-container, .page-footer { padding-left: 24px; padding-right: 24px; }
   .page-footer { margin-left: 0; margin-right: 0; }
 }
@@ -477,7 +494,7 @@ html[data-theme="light"] .resp-movilnet-cntm { background: rgba(80,60,200,0.08);
   <div class="legend-items">
     <div class="legend-item"><span class="legend-shape rango"></span>Rango de fechas</div>
     <div class="legend-item"><span class="legend-shape hito"></span>Hito — entrega o respuesta recibida en un solo día</div>
-    <div class="legend-item"><span class="legend-shape sin-fecha"></span>Sin fecha definida</div>
+    <div class="legend-item"><span class="legend-shape sin-fecha"></span>Por definir</div>
   </div>
   <div class="legend-hint">Pasa el cursor sobre las barras para ver fechas</div>
 </div>
@@ -492,7 +509,7 @@ html[data-theme="light"] .resp-movilnet-cntm { background: rgba(80,60,200,0.08);
 
 <!-- FOOTER -->
 <footer class="page-footer">
-  <span>Plan General Proyecto Movilnet · Conectium · 2026 · Realizado por la Gerencia de Proyectos · v1.0 — 10/09/2026</span>
+  <span>Plan General Proyecto Movilnet · Conectium · 2026 · Realizado por la Gerencia de Proyectos · v1.2 — 10/09/2026</span>
   <span class="footer-right">CONFIDENCIAL — USO INTERNO</span>
 </footer>
 
@@ -512,9 +529,11 @@ const CATS = [
       { name: 'Elaboración de contratos',                                resp: 'Conectium',          status: 'completado', start: '2026-06-01', end: '2026-06-30' },
       { name: 'Entrega de contrato principal a Movilnet',                resp: 'Conectium',          status: 'completado', start: '2026-08-14', end: '2026-08-14' },
       { name: 'Entrega de anexos de contrato a Movilnet',                resp: 'Conectium',          status: 'completado', start: '2026-08-14', end: '2026-08-14' },
-      { name: 'Feedback recibido de Movilnet (Contrato y anexos)',       resp: 'Movilnet',           status: 'completado', start: '2026-08-25', end: '2026-08-25' },
-      { name: 'Entrega de contrato y anexos con correcciones aplicadas', resp: 'Conectium',          status: 'por-hacer',  start: null,         end: null         },
-      { name: 'Aprobación/firma de contrato - Movilnet - Conectium',     resp: 'Movilnet/Conectium', status: 'por-hacer',  start: '2026-09-14', end: '2026-09-25' },
+      { name: 'Feedback recibido de Movilnet (Contrato y anexos) I',     resp: 'Movilnet',           status: 'completado', start: '2026-08-25', end: '2026-08-25' },
+      { name: 'Entrega de contrato y anexos con correcciones aplicadas', resp: 'Conectium',          status: 'completado', start: '2026-09-07', end: '2026-09-07' },
+      { name: 'Feedback recibido de Movilnet (Contrato y anexos) II',    resp: 'Movilnet',           status: 'completado', start: '2026-09-09', end: '2026-09-09' },
+      { name: 'Redefinición de contrato bajo modalidad de alianza',      resp: 'Conectium',          status: 'por-hacer',  start: '2026-09-10', end: '2026-09-16' },
+      { name: 'Aprobación/firma de contrato - Movilnet - Conectium',     resp: 'Movilnet/Conectium', status: 'por-hacer',  start: '2026-09-14', end: '2026-09-23' },
     ]
   },
   {
@@ -526,6 +545,13 @@ const CATS = [
     ]
   },
   {
+    key: 'publicidad', name: 'Publicidad Digital', color: '#FF7FAB',
+    tasks: [
+      { name: 'Plan de comunicación',                                    resp: 'Conectium',          status: 'por-hacer',  start: null,         end: null         },
+      { name: 'Captación de usuarios por SMS',                           resp: 'Conectium',          status: 'por-hacer',  start: null,         end: null         },
+    ]
+  },
+  {
     key: 'diseno', name: 'Diseño de la Solución', color: '#a89cff',
     tasks: [
       { name: 'Entrega de propuesta de diseño Tienda Movilnet',          resp: 'Conectium',          status: 'completado', start: '2026-08-03', end: '2026-08-14' },
@@ -534,7 +560,6 @@ const CATS = [
       { name: 'Aprobación de diseño Tienda Movilnet',                    resp: 'Movilnet/Conectium', status: 'completado', start: '2026-08-14', end: '2026-08-14' },
       { name: 'UX/UI Tienda Movilnet-e — Diseño de flujos principales',  resp: 'Conectium',          status: 'haciendo',   start: '2026-08-17', end: '2026-09-18' },
       { name: 'Diseño del flujo de proceso de pago',                     resp: 'Conectium',          status: 'haciendo',   start: '2026-08-17', end: '2026-09-18' },
-      { name: 'Creación de ambientes - AMC',                             resp: 'Conectium',          status: 'por-hacer',  start: '2026-09-10', end: '2026-09-18' },
       { name: 'Entrega de diseño - flujos principales Movilnet',         resp: 'Conectium',          status: 'por-hacer',  start: '2026-09-21', end: '2026-09-22' },
       { name: 'Aprobación final de tienda con sus flujos principales',   resp: 'Movilnet/Conectium', status: 'por-hacer',  start: '2026-09-23', end: '2026-09-28' },
     ]
@@ -542,6 +567,7 @@ const CATS = [
   {
     key: 'impl', name: 'Implementación en Célula ágil', color: '#F5A623',
     tasks: [
+      { name: 'Creación de ambientes - AMC',                             resp: 'Conectium',          status: 'por-hacer',  start: '2026-09-10', end: '2026-09-18' },
       { name: 'Construcción — Tienda Movilnet-e',                        resp: 'Conectium',          status: 'por-hacer',  start: '2026-10-01', end: '2026-10-30' },
       { name: 'Pruebas y certificación — Tienda Movilnet-e',             resp: 'Conectium',          status: 'por-hacer',  start: '2026-10-01', end: '2026-10-30' },
       { name: 'Configuraciones en AMC - Movilnet',                       resp: 'Conectium',          status: 'por-hacer',  start: '2026-10-01', end: '2026-10-30' },
@@ -551,13 +577,13 @@ const CATS = [
       { name: 'Pruebas y certificación — AMC',                           resp: 'Conectium',          status: 'por-hacer',  start: '2026-11-02', end: '2026-11-30' },
       { name: 'Implementación de flujo de Facturación',                  resp: 'Conectium',          status: 'por-hacer',  start: '2026-11-16', end: '2026-11-30' },
       { name: 'Pruebas y certificación - Flujo de facturación',          resp: 'Conectium',          status: 'por-hacer',  start: '2026-11-16', end: '2026-11-30' },
-      { name: 'Pases a producción — Tienda y AMC',                       resp: 'Movilnet/Conectium', status: 'por-hacer',  start: '2026-12-01', end: '2026-12-09' },
     ]
   },
   {
     key: 'golive', name: 'GO-LIVE', color: '#7ED957',
     tasks: [
-      { name: '🚀 Lanzamiento oficial — Tienda Movilnet y AMC',          resp: 'Movilnet/Conectium', status: 'por-hacer',  start: '2026-12-09', end: '2026-12-09' },
+      { name: 'Pases a producción — Tienda y AMC',                       resp: 'Movilnet/Conectium', status: 'por-hacer',  start: '2026-12-01', end: '2026-12-09' },
+      { name: 'Lanzamiento oficial',                                     resp: 'Movilnet/Conectium', status: 'por-hacer',  start: null,         end: null         },
     ]
   },
 ];
@@ -597,6 +623,7 @@ const colHeaders = document.createElement('div');
 colHeaders.className = 'gantt-col-headers';
 colHeaders.innerHTML = `
   <div class="col-header-label col-header-task">Tarea</div>
+  <div class="col-header-label col-header-fecha">Fecha finalización</div>
   <div class="col-header-label col-header-resp">Responsable</div>
   <div class="col-header-label col-header-months"></div>
 `;
@@ -653,7 +680,7 @@ CATS.forEach((cat, ci) => {
     // Left
     const left = document.createElement('div');
     left.className = 'task-left';
-    left.style.minWidth = '520px';
+    left.style.minWidth = '512px';
     const dot = document.createElement('div');
     dot.className = `status-dot ${task.status}`;
     dot.textContent = task.status === 'completado' ? '✓' : task.status === 'haciendo' ? '●' : '';
@@ -664,6 +691,22 @@ CATS.forEach((cat, ci) => {
     lbl.textContent = task.name;
     lbl.title = task.name;
     left.appendChild(lbl);
+
+    // Fecha de finalización
+    const fechaCol = document.createElement('div');
+    fechaCol.className = 'fecha-col';
+    const fv = document.createElement('span');
+    if (!task.end) {
+      fv.className = 'fecha-val por-definir';
+      fv.textContent = 'Por definir';
+    } else {
+      const vencida = task.status !== 'completado' && new Date(task.end) < TODAY;
+      fv.className = 'fecha-val ' + (task.status === 'completado' ? 'completado' : vencida ? 'vencida' : '');
+      fv.textContent = fmt(task.end);
+      if (vencida) fv.title = 'Fecha límite superada';
+    }
+    fechaCol.appendChild(fv);
+    left.appendChild(fechaCol);
 
     // Responsable badge
     const respCol = document.createElement('div');
@@ -722,7 +765,7 @@ CATS.forEach((cat, ci) => {
       lbl.className = 'bar-label-inside';
       lbl.style.color = cat.color;
       lbl.style.fontSize = '9px';
-      lbl.textContent = 'Sin fecha definida';
+      lbl.textContent = 'Por definir';
       bar.appendChild(lbl);
     } else {
       // Single date or range — draw as milestone diamond or bar
@@ -785,7 +828,7 @@ CATS.forEach((cat, ci) => {
       const estados = { 'completado':'Completado', 'haciendo':'En progreso', 'por-hacer':'Por iniciar' };
       let fechas;
       if (!task.start && !task.end) {
-        fechas = 'Fecha inicio: sin definir<br>Fecha límite: sin definir';
+        fechas = 'Fecha inicio: por definir<br>Fecha límite: por definir';
       } else {
         fechas = `Fecha inicio: ${fmt(task.start)}<br>Fecha límite: ${fmt(task.end)}`;
       }
@@ -872,7 +915,7 @@ function hexToRgba(hex, alpha) {
       // Fechas
       let fechasHtml;
       if (!task.start && !task.end) {
-        fechasHtml = `<span class="mv-sin-fecha">Sin fecha definida</span>`;
+        fechasHtml = `<span class="mv-sin-fecha">Por definir</span>`;
       } else if (task.start === task.end) {
         fechasHtml = `<span class="mv-dates"><strong>${fmt(task.end)}</strong></span>
                       <span class="mv-hito">Hito</span>`;
