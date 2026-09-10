@@ -354,6 +354,92 @@ html[data-theme="light"] .resp-movilnet-cntm { background: rgba(80,60,200,0.08);
   margin-bottom: 6px; font-size: 12px; line-height: 1.4;
 }
 .tooltip.visible { opacity: 1; }
+
+/* ════════════════════════════════════════
+   VISTA MÓVIL — tarjetas por tarea
+   ════════════════════════════════════════ */
+.mobile-view { display: none; padding: 20px 16px 0; }
+
+.mv-group { margin-bottom: 26px; }
+.mv-group-head {
+  display: flex; align-items: center; gap: 9px;
+  padding-bottom: 9px; margin-bottom: 12px;
+  border-bottom: 1px solid var(--border-sub);
+}
+.mv-group-bar { width: 3px; height: 16px; border-radius: 2px; flex-shrink: 0; }
+.mv-group-name {
+  font-family: 'Syne', sans-serif; font-size: 12px;
+  font-weight: 700; letter-spacing: 0.03em; flex: 1;
+}
+.mv-group-count {
+  font-size: 10px; color: var(--text-faint);
+  background: var(--bg-group-hdr); border-radius: 10px; padding: 2px 8px;
+}
+
+.mv-card {
+  background: var(--bg-track-alt);
+  border: 1px solid var(--border-sub);
+  border-left: 3px solid var(--dot-empty);
+  border-radius: 8px;
+  padding: 12px 14px; margin-bottom: 9px;
+}
+.mv-card.completado { opacity: 0.72; }
+
+.mv-card-top { display: flex; align-items: flex-start; gap: 9px; margin-bottom: 9px; }
+.mv-card-name {
+  font-size: 13px; line-height: 1.45; color: var(--text-primary);
+  flex: 1; font-weight: 500;
+}
+.mv-card.completado .mv-card-name {
+  text-decoration: line-through; text-decoration-color: var(--dot-empty);
+  color: var(--text-second);
+}
+.mv-card-meta { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; }
+.mv-dates {
+  font-size: 11px; color: var(--text-second);
+  font-variant-numeric: tabular-nums;
+}
+.mv-dates strong { color: var(--text-primary); font-weight: 600; }
+.mv-dates .arrow { color: var(--text-faint); margin: 0 3px; }
+.mv-hito {
+  font-size: 10px; padding: 2px 7px; border-radius: 20px;
+  background: var(--bg-group-hdr); color: var(--text-muted);
+}
+.mv-sin-fecha { font-size: 11px; color: var(--text-faint); font-style: italic; }
+
+/* ── Breakpoints ── */
+@media (max-width: 1100px) {
+  .task-left, .col-header-task { width: 240px; min-width: 240px; }
+  .month-header { margin-left: 350px; }
+  .resp-col, .col-header-resp { width: 100px; min-width: 100px; }
+  .page-header, .legend, .gantt-container, .page-footer { padding-left: 24px; padding-right: 24px; }
+  .page-footer { margin-left: 0; margin-right: 0; }
+}
+
+@media (max-width: 900px) {
+  .gantt-container { display: none; }
+  .mobile-view { display: block; }
+  .legend-hint { display: none; }
+  .legend { gap: 14px; }
+  .legend-divider { display: none; }
+  .legend-label { width: 100%; margin-bottom: -6px; }
+}
+
+@media (max-width: 640px) {
+  .page-header {
+    padding: 18px 16px 14px;
+    flex-direction: column; align-items: flex-start; gap: 14px;
+  }
+  .header-title { font-size: 19px; }
+  .header-meta { flex-wrap: wrap; gap: 8px; width: 100%; }
+  .theme-toggle { position: absolute; top: 16px; right: 16px; }
+  .legend { padding: 12px 16px; }
+  .page-footer {
+    margin: 28px 16px 0; padding-top: 16px;
+    flex-direction: column; align-items: flex-start; gap: 8px;
+    font-size: 10px; line-height: 1.6;
+  }
+}
 </style>
 </head>
 <body>
@@ -400,6 +486,9 @@ html[data-theme="light"] .resp-movilnet-cntm { background: rgba(80,60,200,0.08);
 <div class="gantt-container">
 <div class="gantt-inner" id="gantt-root"></div>
 </div>
+
+<!-- Vista para pantallas pequeñas -->
+<div class="mobile-view" id="mobile-root"></div>
 
 <!-- FOOTER -->
 <footer class="page-footer">
@@ -742,6 +831,75 @@ function hexToRgba(hex, alpha) {
   const b = parseInt(hex.slice(5,7),16);
   return `rgba(${r},${g},${b},${alpha})`;
 }
+
+// ════════════════════════════════════════
+//  VISTA MÓVIL — misma data, formato lista
+// ════════════════════════════════════════
+(function buildMobileView() {
+  const mroot = document.getElementById('mobile-root');
+  if (!mroot) return;
+
+  const ESTADOS = { 'completado':'Completado', 'haciendo':'En progreso', 'por-hacer':'Por iniciar' };
+  const RESP_CLASS = {
+    'Conectium':          'resp-conectium',
+    'Legal':              'resp-legal',
+    'Movilnet':           'resp-movilnet',
+    'Movilnet/Conectium': 'resp-movilnet-cntm',
+  };
+
+  CATS.forEach(cat => {
+    const group = document.createElement('div');
+    group.className = 'mv-group';
+
+    const head = document.createElement('div');
+    head.className = 'mv-group-head';
+    head.innerHTML = `
+      <span class="mv-group-bar" style="background:${cat.color}"></span>
+      <span class="mv-group-name" style="color:${cat.color}">${cat.name}</span>
+      <span class="mv-group-count">${cat.tasks.length}</span>
+    `;
+    group.appendChild(head);
+
+    cat.tasks.forEach(task => {
+      const card = document.createElement('div');
+      card.className = `mv-card ${task.status}`;
+      card.style.borderLeftColor = cat.color;
+
+      // Icono de estado idéntico al de la vista de escritorio
+      const icon = task.status === 'completado' ? '✓'
+                 : task.status === 'haciendo'   ? '●' : '';
+
+      // Fechas
+      let fechasHtml;
+      if (!task.start && !task.end) {
+        fechasHtml = `<span class="mv-sin-fecha">Sin fecha definida</span>`;
+      } else if (task.start === task.end) {
+        fechasHtml = `<span class="mv-dates"><strong>${fmt(task.end)}</strong></span>
+                      <span class="mv-hito">Hito</span>`;
+      } else {
+        fechasHtml = `<span class="mv-dates">${fmt(task.start)}<span class="arrow">→</span><strong>${fmt(task.end)}</strong></span>`;
+      }
+
+      const respHtml = task.resp && RESP_CLASS[task.resp]
+        ? `<span class="resp-badge ${RESP_CLASS[task.resp]}">${task.resp}</span>`
+        : '';
+
+      card.innerHTML = `
+        <div class="mv-card-top">
+          <span class="status-dot ${task.status}">${icon}</span>
+          <span class="mv-card-name">${task.name}</span>
+        </div>
+        <div class="mv-card-meta">
+          ${respHtml}
+          ${fechasHtml}
+        </div>
+      `;
+      group.appendChild(card);
+    });
+
+    mroot.appendChild(group);
+  });
+})();
 </script>
 
 <script>
