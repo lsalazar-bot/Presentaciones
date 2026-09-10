@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" translate="no">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google" content="notranslate">
 <title>Gantt — Proyecto Movilnet × Conectium</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
@@ -184,11 +185,12 @@ html[data-theme="light"] .resp-movilnet-cntm { background: rgba(80,60,200,0.08);
 /* ── MONTH HEADER ── */
 .month-header { display: grid; margin-left: 520px; margin-bottom: 6px; }
 .month-cell {
-  font-size: 10px; font-weight: 600;
-  color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em;
+  font-size: 9.5px; font-weight: 600;
+  color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em;
   text-align: center; padding-bottom: 4px;
   border-bottom: 1px solid var(--border);
   position: relative; transition: color 0.25s;
+  white-space: nowrap; overflow: hidden;
 }
 .month-cell.current { color: var(--green); }
 .month-cell::after {
@@ -401,7 +403,7 @@ html[data-theme="light"] .resp-movilnet-cntm { background: rgba(80,60,200,0.08);
 
 <!-- FOOTER -->
 <footer class="page-footer">
-  <span>Plan General Proyecto Movilnet · Conectium · 2026 · Realizado por la Gerencia de Proyectos</span>
+  <span>Plan General Proyecto Movilnet · Conectium · 2026 · Realizado por la Gerencia de Proyectos · v1.0 — 10/09/2026</span>
   <span class="footer-right">CONFIDENCIAL — USO INTERNO</span>
 </footer>
 
@@ -523,7 +525,9 @@ mhDiv.style.gridTemplateColumns = colDefs.map(c => `${c.w}fr`).join(' ');
 colDefs.forEach(({m}) => {
   const cell = document.createElement('div');
   cell.className = 'month-cell' + (m.getMonth() === TODAY.getMonth() && m.getFullYear() === TODAY.getFullYear() ? ' current' : '');
-  cell.textContent = MONTH_NAMES[m.getMonth()] + ' ' + m.getFullYear().toString().slice(2);
+  cell.textContent = MONTH_NAMES[m.getMonth()] + ' ' + m.getFullYear();
+  cell.setAttribute('translate', 'no');
+  cell.classList.add('notranslate');
   mhDiv.appendChild(cell);
 });
 root.appendChild(mhDiv);
