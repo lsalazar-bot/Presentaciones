@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gantt — Proyecto Movilnet × Conectium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:           #0d0d0b;
+  --bg-header:    rgba(13,13,11,0.92);
+  --bg-track-alt: rgba(255,255,255,0.008);
+  --bg-group-hdr: #1a1a18;
+  --bg-tooltip:   #1e1e1c;
+  --bg-badge:     rgba(255,255,255,0.04);
+  --bg-track-month: transparent;
+  --border:       #1e1e1c;
+  --border-sub:   #1a1a18;
+  --border-badge: #2a2a28;
+  --border-tooltip: #2e2e2c;
+  --text-primary: #e8e8e4;
+  --text-second:  #9c9b94;
+  --text-muted:   #6b6b67;
+  --text-faint:   #4a4a46;
+  --text-task:    #7a7a74;
+  --text-doing:   #c8c8c2;
+  --dot-empty:    #3a3a38;
+  --dot-empty-b:  #5a5a56;
+  --month-div:    #1a1a18;
+  --sep-color:    #3a3a38;
+  --month-alt:    #161616;
+  --toggle-bg:    #1e1e1c;
+  --toggle-border:#2e2e2c;
+  --toggle-icon:  #9c9b94;
+  --green:        #7ED957;
+}
+
+html[data-theme="light"] {
+  --bg:           #f5f5f2;
+  --bg-header:    rgba(245,245,242,0.94);
+  --bg-track-alt: rgba(0,0,0,0.025);
+  --bg-group-hdr: #ebebea;
+  --bg-tooltip:   #ffffff;
+  --bg-badge:     rgba(0,0,0,0.04);
+  --bg-track-month: transparent;
+  --border:       #e0e0dc;
+  --border-sub:   #e8e8e4;
+  --border-badge: #d4d4d0;
+  --border-tooltip:#d0d0cc;
+  --text-primary: #1a1a18;
+  --text-second:  #4a4a46;
+  --text-muted:   #6b6b67;
+  --text-faint:   #9c9b94;
+  --text-task:    #5a5a56;
+  --text-doing:   #2a2a28;
+  --dot-empty:    #c8c8c2;
+  --dot-empty-b:  #9c9b94;
+  --month-div:    #d8d8d4;
+  --sep-color:    #d0d0cc;
+  --month-alt:    #eeeeea;
+  --toggle-bg:    #e8e8e4;
+  --toggle-border:#d0d0cc;
+  --toggle-icon:  #4a4a46;
+  --green:        #5ab83a;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding-bottom: 60px;
+  transition: background 0.25s, color 0.25s;
+}
+
+/* ── THEME TOGGLE ── */
+.theme-toggle {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: var(--toggle-bg);
+  border: 1px solid var(--toggle-border);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 16px; transition: all 0.2s; flex-shrink: 0;
+  color: var(--toggle-icon);
+}
+.theme-toggle:hover { filter: brightness(1.15); }
+
+/* ── HEADER ── */
+.page-header {
+  padding: 28px 40px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 16px;
+  position: sticky; top: 0; z-index: 50;
+  background: var(--bg-header);
+  backdrop-filter: blur(10px);
+  transition: background 0.25s, border-color 0.25s;
+}
+.brand {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+  color: var(--text-second);
+}
+.brand-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+.brand strong { color: var(--text-primary); }
+.brand .sep { color: var(--sep-color); }
+.header-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px; font-weight: 800; color: var(--text-primary);
+  letter-spacing: -0.03em;
+}
+.header-meta {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 12px; color: var(--text-muted);
+}
+.today-badge {
+  background: rgba(126,217,87,0.12);
+  border: 1px solid rgba(126,217,87,0.3);
+  color: var(--green); border-radius: 5px;
+  padding: 4px 10px; font-size: 11px; font-weight: 600;
+}
+.source-badge {
+  background: var(--bg-badge);
+  border: 1px solid var(--border-badge);
+  color: var(--text-faint); border-radius: 5px;
+  padding: 4px 10px; font-size: 11px;
+}
+
+/* ── LEGEND ── */
+.legend {
+  padding: 14px 40px;
+  display: flex; align-items: center; gap: 24px;
+  border-bottom: 1px solid var(--border-sub);
+  flex-wrap: wrap;
+  transition: border-color 0.25s;
+}
+.legend-label { font-size: 11px; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+.legend-items { display: flex; gap: 16px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-second); }
+/* Réplica exacta de los iconos de estado usados en cada fila */
+.legend-swatch {
+  width: 16px; height: 16px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 700; flex-shrink: 0;
+}
+.legend-swatch.completado { background: rgba(126,217,87,0.2); color: var(--green); border: 1.5px solid var(--green); }
+.legend-swatch.haciendo   { background: rgba(43,126,255,0.15); color: #6babff; border: 1.5px solid #2B7EFF; }
+.legend-swatch.por-hacer  { background: transparent; border: 1.5px solid var(--dot-empty); }
+
+/* Muestras de las tres formas de barra */
+.legend-shape { width: 26px; height: 14px; position: relative; flex-shrink: 0; }
+.legend-shape.rango {
+  border-radius: 4px;
+  background: rgba(168,156,255,0.25);
+  border: 1px solid rgba(168,156,255,0.6);
+}
+.legend-shape.hito::before {
+  content: ''; position: absolute; top: 50%; left: 50%;
+  width: 11px; height: 11px; border-radius: 2px;
+  background: #a89cff;
+  transform: translate(-50%,-50%) rotate(45deg);
+}
+.legend-shape.sin-fecha {
+  border-radius: 4px;
+  border: 1px dashed rgba(168,156,255,0.45);
+  background: repeating-linear-gradient(90deg, transparent, transparent 4px, rgba(168,156,255,0.15) 4px, rgba(168,156,255,0.15) 8px);
+}
+.legend-divider { width: 1px; height: 20px; background: var(--border); }
+.legend-hint { margin-left: auto; font-size: 11px; color: var(--text-faint); }
+
+
+html[data-theme="light"] .resp-conectium     { background: rgba(43,90,200,0.08); color: #2B5AC8; border-color: rgba(43,90,200,0.25); }
+html[data-theme="light"] .resp-legal         { background: rgba(80,80,80,0.08); color: #505050; border-color: rgba(80,80,80,0.2); }
+html[data-theme="light"] .resp-movilnet      { background: rgba(200,60,100,0.08); color: #C83C64; border-color: rgba(200,60,100,0.2); }
+html[data-theme="light"] .resp-movilnet-cntm { background: rgba(80,60,200,0.08); color: #503CC8; border-color: rgba(80,60,200,0.2); }
+
+/* ── GANTT WRAPPER ── */
+.gantt-container { padding: 24px 40px 0; overflow-x: auto; }
+.gantt-inner { min-width: 900px; padding-right: 60px; }
+.task-row { overflow: visible; }
+
+/* ── MONTH HEADER ── */
+.month-header { display: grid; margin-left: 520px; margin-bottom: 6px; }
+.month-cell {
+  font-size: 10px; font-weight: 600;
+  color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em;
+  text-align: center; padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+  position: relative; transition: color 0.25s;
+}
+.month-cell.current { color: var(--green); }
+.month-cell::after {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 1px; background: var(--border);
+}
+
+/* ── CATEGORY GROUP ── */
+.cat-group { margin-bottom: 6px; }
+.cat-header {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 12px 8px 0; border-radius: 6px 0 0 6px;
+  position: relative; cursor: pointer; user-select: none;
+}
+.cat-header:hover { background: var(--bg-group-hdr); }
+.cat-bar { width: 3px; border-radius: 2px; height: 18px; flex-shrink: 0; }
+.cat-name { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.04em; flex: 1; }
+.cat-count {
+  font-size: 10px; color: var(--text-faint);
+  background: var(--bg-group-hdr); border-radius: 10px; padding: 2px 8px;
+  transition: background 0.25s;
+}
+.cat-toggle { font-size: 10px; color: var(--text-faint); transition: transform 0.2s; }
+.cat-group.collapsed .cat-toggle { transform: rotate(-90deg); }
+.task-rows { overflow: hidden; }
+.cat-group.collapsed .task-rows { display: none; }
+
+/* ── TASK ROW ── */
+.task-row {
+  display: flex; align-items: center;
+  margin-bottom: 3px; min-height: 32px;
+}
+.task-row:hover .task-label { color: var(--text-primary); }
+.task-row:hover .track { background: var(--bg-track-alt); }
+
+.task-left {
+  width: 520px; min-width: 520px;
+  display: flex; align-items: center;
+  gap: 8px; padding-right: 14px; flex-shrink: 0;
+}
+.status-dot {
+  width: 16px; height: 16px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; font-size: 8px; font-weight: 700;
+}
+.status-dot.completado { background: rgba(126,217,87,0.2); color: var(--green); border: 1.5px solid var(--green); }
+.status-dot.haciendo   { background: rgba(43,126,255,0.15); color: #6babff; border: 1.5px solid #2B7EFF; }
+.status-dot.por-hacer  { background: transparent; border: 1.5px solid var(--dot-empty); }
+
+.task-label {
+  font-size: 11.5px; color: var(--text-task);
+  line-height: 1.4; flex: 1; transition: color 0.15s;
+  white-space: normal; word-break: break-word;
+}
+.task-label.completado { color: var(--text-muted); text-decoration: line-through; text-decoration-color: var(--dot-empty); }
+.task-label.haciendo   { color: var(--text-doing); }
+
+
+/* ── RESPONSABLE COLUMN ── */
+.resp-col {
+  width: 110px; min-width: 110px; flex-shrink: 0;
+  display: flex; align-items: center;
+  padding: 0 8px;
+}
+.resp-badge {
+  font-size: 10px; font-weight: 600;
+  padding: 2px 8px; border-radius: 20px;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+.resp-conectium       { background: rgba(174,192,245,0.15); color: #aec0f5; border: 1px solid rgba(174,192,245,0.3); }
+.resp-legal           { background: rgba(206,206,206,0.12); color: #cecece; border: 1px solid rgba(206,206,206,0.25); }
+.resp-movilnet        { background: rgba(237,173,200,0.15); color: #edadc8; border: 1px solid rgba(237,173,200,0.3); }
+.resp-movilnet-cntm   { background: rgba(182,182,255,0.15); color: #b6b6ff; border: 1px solid rgba(182,182,255,0.3); }
+.resp-none            { color: var(--text-faint); font-size: 10px; font-style: italic; }
+
+/* Column header */
+.gantt-col-headers {
+  display: flex; align-items: center;
+  margin-bottom: 2px; padding: 0;
+}
+.col-header-label {
+  font-size: 9px; font-weight: 600; color: var(--text-faint);
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.col-header-task    { width: 300px; min-width: 300px; text-align: center; }
+.col-header-resp    { width: 110px; min-width: 110px; text-align: center; }
+.col-header-months  { flex: 1; }
+
+/* ── TRACK ── */
+.track { flex: 1; height: 28px; position: relative; border-radius: 4px; transition: background 0.15s; }
+.track-bg-even { background: var(--bg-track-alt); }
+
+.bar {
+  position: absolute; height: 18px; top: 5px;
+  border-radius: 4px; min-width: 6px;
+  display: flex; align-items: center;
+  transition: filter 0.15s;
+  overflow: visible;
+}
+.bar:hover { filter: brightness(1.3); z-index: 2; }
+.bar-label-inside {
+  position: relative; z-index: 1;
+  font-size: 9px; font-weight: 600;
+  padding: 0 5px; white-space: nowrap; pointer-events: none;
+}
+.bar-date {
+  position: absolute; left: calc(100% + 4px); top: 3px;
+  font-size: 9px; white-space: nowrap;
+  pointer-events: none; opacity: 0; transition: opacity 0.15s;
+}
+.bar:hover .bar-date { opacity: 1; }
+
+/* Today line */
+.today-line {
+  position: absolute; top: 0; bottom: 0;
+  width: 2px; z-index: 10;
+  background: rgba(126,217,87,0.6);
+  pointer-events: none;
+}
+.today-line::before {
+  content: ''; position: absolute; top: -4px; left: -4px;
+  width: 10px; height: 10px; border-radius: 50%; background: var(--green);
+}
+.today-line::after {
+  content: 'HOY'; position: absolute; top: -18px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 8px; font-weight: 700; color: var(--green);
+  white-space: nowrap; letter-spacing: 0.06em;
+}
+
+/* Month dividers */
+.month-div { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--month-div); pointer-events: none; }
+
+/* Month alternating bg */
+.month-alt-band { position: absolute; top: 0; bottom: 0; pointer-events: none; }
+
+/* ── FOOTER ── */
+.page-footer {
+  margin: 40px 40px 0;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-sub);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 11px; color: var(--text-faint);
+  transition: border-color 0.25s;
+}
+.footer-right { color: var(--green); font-weight: 600; font-size: 10px; letter-spacing: 0.06em; }
+
+/* Tooltip */
+.tooltip {
+  position: fixed; z-index: 100;
+  background: var(--bg-tooltip); border: 1px solid var(--border-tooltip);
+  border-radius: 8px; padding: 12px 14px;
+  font-size: 11px; color: var(--text-second);
+  pointer-events: none; opacity: 0; transition: opacity 0.15s;
+  width: max-content; max-width: 320px; line-height: 1.7;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+}
+.tooltip strong {
+  color: var(--text-primary); display: block;
+  margin-bottom: 6px; font-size: 12px; line-height: 1.4;
+}
+.tooltip.visible { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="page-header">
+  <div style="display:flex;flex-direction:column;gap:6px;">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <strong>conectium</strong>
+      <span class="sep">×</span>
+      <strong style="color:#E8453C;">movilnet</strong>
+    </div>
+    <div class="header-title">Plan General del Proyecto</div>
+    <div style="font-size:12px;color:var(--text-muted);font-weight:400;margin-top:2px;">Proyección estimada de implementación</div>
+  </div>
+  <div class="header-meta">
+    <button class="theme-toggle" id="themeToggle" title="Cambiar tema" aria-label="Cambiar tema oscuro/claro">🌙</button>
+    <span class="today-badge">Hoy: 10/09/2026</span>
+    <span class="source-badge">Fuente: ClickUp · 28 tareas</span>
+    <span style="font-size:11px;color:#4a4a46;">Inicio: 06/05/2026</span>
+  </div>
+</header>
+
+<!-- LEGEND -->
+<div class="legend">
+  <span class="legend-label">Estado</span>
+  <div class="legend-items">
+    <div class="legend-item"><span class="legend-swatch completado">✓</span>Completado</div>
+    <div class="legend-item"><span class="legend-swatch haciendo">●</span>En progreso</div>
+    <div class="legend-item"><span class="legend-swatch por-hacer"></span>Por iniciar</div>
+  </div>
+  <span class="legend-divider"></span>
+  <span class="legend-label">Barra</span>
+  <div class="legend-items">
+    <div class="legend-item"><span class="legend-shape rango"></span>Rango de fechas</div>
+    <div class="legend-item"><span class="legend-shape hito"></span>Hito — entrega o respuesta recibida en un solo día</div>
+    <div class="legend-item"><span class="legend-shape sin-fecha"></span>Sin fecha definida</div>
+  </div>
+  <div class="legend-hint">Pasa el cursor sobre las barras para ver fechas</div>
+</div>
+
+<!-- GANTT -->
+<div class="gantt-container">
+<div class="gantt-inner" id="gantt-root"></div>
+</div>
+
+<!-- FOOTER -->
+<footer class="page-footer">
+  <span>Plan General Proyecto Movilnet · Conectium · 2026 · Realizado por la Gerencia de Proyectos</span>
+  <span class="footer-right">CONFIDENCIAL — USO INTERNO</span>
+</footer>
+
+<!-- TOOLTIP -->
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// ── DATA ──
+const PROJECT_START = new Date('2026-05-06');
+const PROJECT_END   = new Date('2026-12-15');
+const TODAY         = new Date('2026-09-10');
+
+const CATS = [
+  {
+    key: 'legal', name: 'Legal', color: '#2B7EFF',
+    tasks: [
+      { name: 'Elaboración de contratos',                                resp: 'Conectium',          status: 'completado', start: '2026-06-01', end: '2026-06-30' },
+      { name: 'Entrega de contrato principal a Movilnet',                resp: 'Conectium',          status: 'completado', start: '2026-08-14', end: '2026-08-14' },
+      { name: 'Entrega de anexos de contrato a Movilnet',                resp: 'Conectium',          status: 'completado', start: '2026-08-14', end: '2026-08-14' },
+      { name: 'Feedback recibido de Movilnet (Contrato y anexos)',       resp: 'Movilnet',           status: 'completado', start: '2026-08-25', end: '2026-08-25' },
+      { name: 'Entrega de contrato y anexos con correcciones aplicadas', resp: 'Conectium',          status: 'por-hacer',  start: null,         end: null         },
+      { name: 'Aprobación/firma de contrato - Movilnet - Conectium',     resp: 'Movilnet/Conectium', status: 'por-hacer',  start: '2026-09-14', end: '2026-09-25' },
+    ]
+  },
+  {
+    key: 'finanzas', name: 'Finanzas', color: '#1DC9A0',
+    tasks: [
+      { name: 'Revisión de proceso de facturación',                      resp: 'Conectium',          status: 'completado', start: '2026-08-03', end: '2026-08-31' },
+      { name: 'Definición de proceso de facturación',                    resp: 'Conectium',          status: 'por-hacer',  start: '2026-10-01', end: '2026-10-30' },
+      { name: 'Adecuaciones en ERP ODOO',                                resp: 'Conectium',          status: 'por-hacer',  start: '2026-10-01', end: '2026-11-30' },
+    ]
+  },
+  {
+    key: 'diseno', name: 'Diseño de la Solución', color: '#a89cff',
+    tasks: [
+      { name: 'Entrega de propuesta de diseño Tienda Movilnet',          resp: 'Conectium',          status: 'completado', start: '2026-08-03', end: '2026-08-14' },
+      { name: 'Feedback de Movilnet sobre la Tienda Movilnet',           resp: 'Movilnet',           status: 'completado', start: '2026-08-14', end: '2026-08-14' },
+      { name: 'Entrega de diseño con ajustes para revisión',             resp: 'Conectium',          status: 'completado', start: '2026-07-27', end: '2026-07-31' },
+      { name: 'Aprobación de diseño Tienda Movilnet',                    resp: 'Movilnet/Conectium', status: 'completado', start: '2026-08-14', end: '2026-08-14' },
+      { name: 'UX/UI Tienda Movilnet-e — Diseño de flujos principales',  resp: 'Conectium',          status: 'haciendo',   start: '2026-08-17', end: '2026-09-18' },
+      { name: 'Diseño del flujo de proceso de pago',                     resp: 'Conectium',          status: 'haciendo',   start: '2026-08-17', end: '2026-09-18' },
+      { name: 'Creación de ambientes - AMC',                             resp: 'Conectium',          status: 'por-hacer',  start: '2026-09-10', end: '2026-09-18' },
+      { name: 'Entrega de diseño - flujos principales Movilnet',         resp: 'Conectium',          status: 'por-hacer',  start: '2026-09-21', end: '2026-09-22' },
+      { name: 'Aprobación final de tienda con sus flujos principales',   resp: 'Movilnet/Conectium', status: 'por-hacer',  start: '2026-09-23', end: '2026-09-28' },
+    ]
+  },
+  {
+    key: 'impl', name: 'Implementación en Célula ágil', color: '#F5A623',
+    tasks: [
+      { name: 'Construcción — Tienda Movilnet-e',                        resp: 'Conectium',          status: 'por-hacer',  start: '2026-10-01', end: '2026-10-30' },
+      { name: 'Pruebas y certificación — Tienda Movilnet-e',             resp: 'Conectium',          status: 'por-hacer',  start: '2026-10-01', end: '2026-10-30' },
+      { name: 'Configuraciones en AMC - Movilnet',                       resp: 'Conectium',          status: 'por-hacer',  start: '2026-10-01', end: '2026-10-30' },
+      { name: 'Implementación del flujo de pago',                        resp: 'Conectium',          status: 'por-hacer',  start: '2026-10-19', end: '2026-10-30' },
+      { name: 'Pruebas y certificación - Flujo de Pago',                 resp: 'Conectium',          status: 'por-hacer',  start: '2026-10-19', end: '2026-10-30' },
+      { name: 'Implementación de mejoras y flujos en AMC',               resp: 'Conectium',          status: 'por-hacer',  start: '2026-11-02', end: '2026-11-30' },
+      { name: 'Pruebas y certificación — AMC',                           resp: 'Conectium',          status: 'por-hacer',  start: '2026-11-02', end: '2026-11-30' },
+      { name: 'Implementación de flujo de Facturación',                  resp: 'Conectium',          status: 'por-hacer',  start: '2026-11-16', end: '2026-11-30' },
+      { name: 'Pruebas y certificación - Flujo de facturación',          resp: 'Conectium',          status: 'por-hacer',  start: '2026-11-16', end: '2026-11-30' },
+      { name: 'Pases a producción — Tienda y AMC',                       resp: 'Movilnet/Conectium', status: 'por-hacer',  start: '2026-12-01', end: '2026-12-09' },
+    ]
+  },
+  {
+    key: 'golive', name: 'GO-LIVE', color: '#7ED957',
+    tasks: [
+      { name: '🚀 Lanzamiento oficial — Tienda Movilnet y AMC',          resp: 'Movilnet/Conectium', status: 'por-hacer',  start: '2026-12-09', end: '2026-12-09' },
+    ]
+  },
+];
+
+// ── HELPERS ──
+const totalMs = PROJECT_END - PROJECT_START;
+function pct(d) {
+  const dd = new Date(d);
+  return Math.max(0, Math.min(1, (dd - PROJECT_START) / totalMs));
+}
+function fmt(d) {
+  // Formatea la cadena 'YYYY-MM-DD' tal cual, sin convertir a Date,
+  // para que la fecha mostrada sea exactamente la registrada en ClickUp.
+  if (!d) return 'Sin fecha';
+  const [y, m, day] = d.split('-');
+  return `${day}/${m}/${y}`;
+}
+
+// ── MONTHS ──
+function getMonths() {
+  const months = [];
+  let d = new Date(PROJECT_START.getFullYear(), PROJECT_START.getMonth(), 1);
+  while (d <= PROJECT_END) {
+    months.push(new Date(d));
+    d.setMonth(d.getMonth() + 1);
+  }
+  return months;
+}
+const MONTHS = getMonths();
+const MONTH_NAMES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+// ── BUILD ──
+const root = document.getElementById('gantt-root');
+
+// Column headers
+const colHeaders = document.createElement('div');
+colHeaders.className = 'gantt-col-headers';
+colHeaders.innerHTML = `
+  <div class="col-header-label col-header-task">Tarea</div>
+  <div class="col-header-label col-header-resp">Responsable</div>
+  <div class="col-header-label col-header-months"></div>
+`;
+root.appendChild(colHeaders);
+
+// Month header
+const mhDiv = document.createElement('div');
+mhDiv.className = 'month-header';
+const colDefs = MONTHS.map((m,i) => {
+  const next = i < MONTHS.length-1 ? MONTHS[i+1] : new Date(PROJECT_END.getFullYear(), PROJECT_END.getMonth()+1, 1);
+  const w = (pct(next) - pct(m)) * 100;
+  return { m, w };
+});
+mhDiv.style.gridTemplateColumns = colDefs.map(c => `${c.w}fr`).join(' ');
+colDefs.forEach(({m}) => {
+  const cell = document.createElement('div');
+  cell.className = 'month-cell' + (m.getMonth() === TODAY.getMonth() && m.getFullYear() === TODAY.getFullYear() ? ' current' : '');
+  cell.textContent = MONTH_NAMES[m.getMonth()] + ' ' + m.getFullYear().toString().slice(2);
+  mhDiv.appendChild(cell);
+});
+root.appendChild(mhDiv);
+
+// Today pct
+const todayPct = pct(TODAY) * 100;
+
+// Categories
+CATS.forEach((cat, ci) => {
+  const group = document.createElement('div');
+  group.className = 'cat-group';
+  group.dataset.key = cat.key;
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'cat-header';
+  header.innerHTML = `
+    <div class="cat-bar" style="background:${cat.color}"></div>
+    <span class="cat-name" style="color:${cat.color}">${cat.name}</span>
+    <span class="cat-count">${cat.tasks.length} tareas</span>
+    <span class="cat-toggle">▾</span>
+  `;
+  header.addEventListener('click', () => group.classList.toggle('collapsed'));
+  group.appendChild(header);
+
+  // Tasks
+  const rows = document.createElement('div');
+  rows.className = 'task-rows';
+
+  cat.tasks.forEach((task, ti) => {
+    const row = document.createElement('div');
+    row.className = 'task-row';
+
+    // Left
+    const left = document.createElement('div');
+    left.className = 'task-left';
+    left.style.minWidth = '520px';
+    const dot = document.createElement('div');
+    dot.className = `status-dot ${task.status}`;
+    dot.textContent = task.status === 'completado' ? '✓' : task.status === 'haciendo' ? '●' : '';
+    left.appendChild(dot);
+
+    const lbl = document.createElement('div');
+    lbl.className = `task-label ${task.status}`;
+    lbl.textContent = task.name;
+    lbl.title = task.name;
+    left.appendChild(lbl);
+
+    // Responsable badge
+    const respCol = document.createElement('div');
+    respCol.className = 'resp-col';
+    const respMap = {
+      'Conectium':         'resp-conectium',
+      'Legal':             'resp-legal',
+      'Movilnet':          'resp-movilnet',
+      'Movilnet/Conectium':'resp-movilnet-cntm',
+    };
+    if (task.resp && respMap[task.resp]) {
+      const badge = document.createElement('span');
+      badge.className = `resp-badge ${respMap[task.resp]}`;
+      badge.textContent = task.resp;
+      respCol.appendChild(badge);
+    } else {
+      respCol.innerHTML = `<span class="resp-none">—</span>`;
+    }
+    left.appendChild(respCol);
+
+    row.appendChild(left);
+
+    // Track
+    const track = document.createElement('div');
+    track.className = 'track' + (ti % 2 === 0 ? ' track-bg-even' : '');
+
+    // Month dividers
+    MONTHS.forEach((m, mi) => {
+      if (mi === 0) return;
+      const div = document.createElement('div');
+      div.className = 'month-div';
+      div.style.left = (pct(m) * 100) + '%';
+      track.appendChild(div);
+    });
+
+    // Today line
+    const tl = document.createElement('div');
+    tl.className = 'today-line';
+    tl.style.left = todayPct + '%';
+    track.appendChild(tl);
+
+    // Bar
+    const startP = task.start ? pct(task.start) : null;
+    const endP   = task.end   ? pct(task.end)   : null;
+
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+
+    if (!startP && !endP) {
+      // No dates — show a dashed placeholder
+      bar.style.left   = '2%';
+      bar.style.width  = '96%';
+      bar.style.background = 'repeating-linear-gradient(90deg, transparent, transparent 4px, ' + hexToRgba(cat.color, 0.15) + ' 4px, ' + hexToRgba(cat.color, 0.15) + ' 8px)';
+      bar.style.border = '1px dashed ' + hexToRgba(cat.color, 0.3);
+      const lbl = document.createElement('span');
+      lbl.className = 'bar-label-inside';
+      lbl.style.color = cat.color;
+      lbl.style.fontSize = '9px';
+      lbl.textContent = 'Sin fecha definida';
+      bar.appendChild(lbl);
+    } else {
+      // Single date or range — draw as milestone diamond or bar
+      const sp = startP !== null ? startP : endP;
+      const ep = endP !== null ? endP : startP;
+      const isMilestone = sp === ep;
+      const w = isMilestone ? 0 : Math.max(0, (ep - sp)) * 100;
+
+      if (isMilestone) {
+        // Diamond marker
+        bar.style.left   = (sp * 100) + '%';
+        bar.style.width  = '0';
+        bar.style.overflow = 'visible';
+        const diamond = document.createElement('span');
+        diamond.style.cssText = `
+          display:block; width:12px; height:12px;
+          background:${cat.color}; opacity:${task.status==='completado'?'0.7':'0.9'};
+          transform:rotate(45deg) translate(-6px,-6px);
+          position:absolute; top:50%; left:0;
+          border-radius:2px;
+        `;
+        bar.appendChild(diamond);
+        // Date label
+        const dl = document.createElement('span');
+        dl.className = 'bar-date';
+        dl.style.color = cat.color;
+        dl.style.left = '10px';
+        dl.textContent = fmt(task.end || task.start);
+        bar.appendChild(dl);
+      } else {
+        // Range bar
+        bar.style.left   = (sp * 100) + '%';
+        bar.style.width  = w + '%';
+        bar.style.background = hexToRgba(cat.color, task.status==='completado' ? 0.25 : task.status==='haciendo' ? 0.35 : 0.2);
+        bar.style.border = `1px solid ${hexToRgba(cat.color, task.status==='completado' ? 0.4 : task.status==='haciendo' ? 0.85 : 0.5)}`;
+        if (task.status === 'completado') {
+          const inner = document.createElement('span');
+          inner.className = 'bar-label-inside';
+          inner.style.color = cat.color;
+          inner.textContent = '✓';
+          bar.appendChild(inner);
+        } else if (task.status === 'haciendo') {
+          const inner = document.createElement('span');
+          inner.className = 'bar-label-inside';
+          inner.style.color = cat.color;
+          inner.textContent = '●';
+          bar.appendChild(inner);
+        }
+        const dl = document.createElement('span');
+        dl.className = 'bar-date';
+        dl.style.color = cat.color;
+        dl.textContent = fmt(task.end);
+        bar.appendChild(dl);
+      }
+    }
+
+    // Tooltip
+    const tooltip = document.getElementById('tooltip');
+    bar.addEventListener('mouseenter', (e) => {
+      const estados = { 'completado':'Completado', 'haciendo':'En progreso', 'por-hacer':'Por iniciar' };
+      let fechas;
+      if (!task.start && !task.end) {
+        fechas = 'Fecha inicio: sin definir<br>Fecha límite: sin definir';
+      } else {
+        fechas = `Fecha inicio: ${fmt(task.start)}<br>Fecha límite: ${fmt(task.end)}`;
+      }
+      tooltip.innerHTML = `<strong>${task.name}</strong>
+        Responsable: ${task.resp || '—'}<br>
+        Estado: ${estados[task.status] || task.status}<br>
+        ${fechas}`;
+      tooltip.classList.add('visible');
+    });
+    bar.addEventListener('mousemove', (e) => {
+      const pad = 12;
+      const r = tooltip.getBoundingClientRect();
+      // Por defecto a la derecha y abajo del cursor; se voltea si no cabe.
+      let x = e.clientX + 14;
+      if (x + r.width + pad > window.innerWidth) {
+        x = e.clientX - r.width - 14;
+      }
+      if (x < pad) x = pad;
+
+      let y = e.clientY - 10;
+      if (y + r.height + pad > window.innerHeight) {
+        y = window.innerHeight - r.height - pad;
+      }
+      if (y < pad) y = pad;
+
+      tooltip.style.left = x + 'px';
+      tooltip.style.top  = y + 'px';
+    });
+    bar.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+
+    track.appendChild(bar);
+    row.appendChild(track);
+    rows.appendChild(row);
+  });
+
+  group.appendChild(rows);
+  root.appendChild(group);
+});
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+</script>
+
+<script>
+// ── THEME TOGGLE ──
+const STORAGE_KEY = 'gantt-theme';
+const btn = document.getElementById('themeToggle');
+
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  btn.textContent = theme === 'light' ? '🌙' : '☀️';
+  btn.title = theme === 'light' ? 'Cambiar a modo oscuro' : 'Cambiar a modo claro';
+  localStorage.setItem(STORAGE_KEY, theme);
+}
+
+btn.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+});
+
+// Init: respect saved preference or system preference
+const saved = localStorage.getItem(STORAGE_KEY);
+if (saved) {
+  applyTheme(saved);
+} else {
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  applyTheme(prefersDark ? 'dark' : 'light');
+}
+</script>
+</body>
+</html>
