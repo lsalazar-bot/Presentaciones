@@ -339,7 +339,7 @@ h2{font-size:clamp(26px,3.4vw,42px);line-height:1.08;margin:16px 0 6px;font-weig
       <div class="brand-tag">Proyectos + Procesos</div>
     </div>
     <div class="meta">
-      <div class="doc"><b>Propuesta a Dirección</b><br>v4.3 · 27 ago 2026</div>
+      <div class="doc"><b>Propuesta a Dirección</b><br>v6.2 · 13 oct 2026</div>
       <button class="iconbtn" id="themeBtn" title="Cambiar tema" aria-label="Cambiar tema claro/oscuro">◑</button>
       <button class="iconbtn wide" id="menuBtn" aria-label="Ver índice">☰ Índice</button>
     </div>
@@ -616,18 +616,19 @@ h2{font-size:clamp(26px,3.4vw,42px);line-height:1.08;margin:16px 0 6px;font-weig
       </div>
     </section>
 
-    <!-- 90 DÍAS (oculta) -->
-    <section class="slide" data-skip>
+    <!-- 90 DÍAS -->
+    <section class="slide">
       <div class="wrap">
-        <div class="eyebrow">10 · Plan de aterrizaje</div>
+        <div class="eyebrow">09 · Plan de aterrizaje</div>
         <h2>Primeros 90 días: entender, priorizar y demostrar</h2>
+        <p class="lead">Montado sobre lo que Andrómeda ya usa —<span class="accent">ClickUp, Odoo y herramientas como Make, Brain, etc.</span>—, enfocado en los procesos transversales y negocios.</p>
         <div class="phasebar" id="phasebar">
           <button class="phasetab on" data-p="0"><div class="pd">DÍAS 1–30</div><div class="pt">Entender</div></button>
           <button class="phasetab" data-p="1"><div class="pd">DÍAS 31–60</div><div class="pt">Priorizar y diseñar</div></button>
           <button class="phasetab" data-p="2"><div class="pd">DÍAS 61–90</div><div class="pt">Implementar y demostrar</div></button>
         </div>
         <div class="phasepanel" id="phasepanel"></div>
-        <p class="sub">Al día 90, Dirección podrá responder: qué procesos tenemos, cómo funcionan, qué mejorar primero y qué valor estamos generando.</p>
+        <p class="sub">Al día 90, Dirección podrá saber: qué procesos tenemos, cómo funcionan, qué mejorar primero.</p>
       </div>
     </section>
 
@@ -655,11 +656,11 @@ h2{font-size:clamp(26px,3.4vw,42px);line-height:1.08;margin:16px 0 6px;font-weig
 
   <!-- ===== FOOTER NAV ===== -->
   <footer class="footer">
-    <div class="foot-left">Andrómeda · Confidencial · v4.3</div>
+    <div class="foot-left">Andrómeda · Confidencial · v6.2</div>
     <div class="dots" id="dots"></div>
     <div class="navbtns">
       <button class="iconbtn" id="prev" aria-label="Anterior">←</button>
-      <span class="count" id="count">01 / 09</span>
+      <span class="count" id="count">01 / 10</span>
       <button class="iconbtn" id="next" aria-label="Siguiente">→</button>
     </div>
   </footer>
@@ -679,7 +680,7 @@ h2{font-size:clamp(26px,3.4vw,42px);line-height:1.08;margin:16px 0 6px;font-weig
 (function(){
   "use strict";
   var slides = Array.prototype.slice.call(document.querySelectorAll('.slide:not([data-skip])'));
-  var titles = ["Portada","La oportunidad","La visión","Dos líneas de trabajo","Los pilares","La metodología","IA aplicada","Cómo se mide","El modelo"];
+  var titles = ["Portada","La oportunidad","La visión","Dos líneas de trabajo","Los pilares","La metodología","IA aplicada","Cómo se mide","El modelo","Plan 90 días"];
   var i = 0, total = slides.length;
   var dots = document.getElementById('dots');
   var count = document.getElementById('count');
@@ -801,9 +802,9 @@ h2{font-size:clamp(26px,3.4vw,42px);line-height:1.08;margin:16px 0 6px;font-weig
 
   // roadmap phases
   var PHASES = [
-    {h:"Entender", items:["Inventario de procesos","Mapa corporativo","Identificar owners","Diagnóstico de madurez","Backlog inicial de mejoras"]},
-    {h:"Priorizar y diseñar", items:["3–5 procesos críticos","Levantar AS-IS + línea base","Diseñar TO-BE","Definir KPIs","Casos de automatización / IA"]},
-    {h:"Implementar y demostrar", items:["Quick wins","Primeras automatizaciones","Dashboard inicial","Resultados AS-IS vs. TO-BE","Roadmap a 6 meses"]}
+    {h:"Entender", items:["Inventario de procesos","Separar lo que es proyecto de lo que es proceso","Identificar qué vive en ClickUp/Odoo u otra herramienta vs. en la gente (en caso de aplicar)","Diagnóstico de madurez (representación gráfica)","Identificar dueños de proceso por negocios y áreas transversales"]},
+    {h:"Priorizar y diseñar", items:["Matriz impacto × esfuerzo","Elegir 2–3 procesos: Transversal y Negocios","Levantar AS-IS","Diseñar TO-BE simplificado","Definir KPIs por proceso, conectados a OKRs","Identificar casos de automatización (según sea el caso)"]},
+    {h:"Implementar y demostrar", items:["1–2 procesos ya automatizados (Make / ClickUp)","Análisis: AS-IS vs. TO-BE","Proceso vivo, con dueño y tablero funcionando","Roadmap a 6 meses de revisiones y monitoreo"]}
   ];
   var panel = document.getElementById('phasepanel');
   function renderPhase(p){
