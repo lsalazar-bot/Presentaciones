@@ -203,10 +203,19 @@ function render(data,preview){
   document.body.classList.remove('loading');
 }
 const preview=new URLSearchParams(location.search).has('preview');
-fetch((preview?'data-preview.json':'data.json')+'?t='+Date.now(),{cache:'no-store'})
- .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()})
- .then(d=>render(d,preview))
- .catch(e=>{const b=$('pv');b.hidden=false;b.classList.add('err');b.textContent='No se pudieron cargar los datos del reporte ('+e.message+'). Recarga la página en unos minutos.'});
+const FILE=preview?'data-preview.json':'data.json';
+const API='https://api.github.com/repos/lsalazar-bot/Presentaciones/contents/odoo-v19/'+FILE+'?ref=gh-pages&t='+Date.now();
+const getJSON=(u,h)=>fetch(u,{cache:'no-store',headers:h||{}}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()});
+// 1) datos directos del repositorio (sin esperar a GitHub Pages); 2) respaldo: copia publicada en Pages
+const load=()=>getJSON(API,{Accept:'application/vnd.github.raw+json'}).catch(()=>getJSON(FILE+'?t='+Date.now()));
+let tries=0;
+const go=()=>load().then(d=>{
+  if(!d||!Array.isArray(d.tareas)||!d.tareas.length){
+    const b=$('pv');b.hidden=false;b.classList.remove('err');b.innerHTML='<b>Actualizando reporte…</b> Los datos se están publicando; esta página se recargará sola en unos segundos.';
+    if(++tries<30)setTimeout(go,20000);return;}
+  $('pv').hidden=true;render(d,preview);
+}).catch(e=>{const b=$('pv');b.hidden=false;b.classList.add('err');b.textContent='No se pudieron cargar los datos del reporte ('+e.message+'). Recarga la página en unos minutos.'});
+go();
 })();
 </script>
 </body>
